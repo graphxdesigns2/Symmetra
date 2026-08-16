@@ -18,10 +18,10 @@ const SAMPLE_EN_HTML = `<section>
   
   <p>For more details, consult the <a href="https://www.canada.ca/en/services/benefits/ei.html">Employment Insurance overview</a>.</p>
 
-  <div class="alert alert-info">
-    <h4>Important notice</h4>
+  <section class="alert alert-info">
+    <h3>Important notice</h3>
     <p>Always have your <strong>Social Insurance Number (SIN)</strong> ready before starting.</p>
-  </div>
+  </section>
 </section>`;
 
 const SAMPLE_FR_DOCX_HTML = `<h2>Prestations d'assurance-emploi et congés</h2>
@@ -36,7 +36,7 @@ const SAMPLE_FR_DOCX_HTML = `<h2>Prestations d'assurance-emploi et congés</h2>
 <h3>Comment présenter une demande</h3>
 <p>Présentez votre demande en ligne par l'intermédiaire du portail officiel. Vous devez présenter votre demande dès que possible après avoir cessé de travailler.</p>
 <p>Pour en savoir plus, consultez <a href="https://www.canada.ca/fr/services/prestations/ae.html">l'aperçu de l'assurance-emploi</a>.</p>
-<h4>Avis important</h4>
+<h3>Avis important</h3>
 <p>Ayez toujours votre <strong>numéro d'assurance sociale (NAS)</strong> à portée de main avant de commencer.</p>`;
 
 // Symmetra Core Constants & Logic
@@ -577,8 +577,8 @@ html, body {
 
 body {
   padding: 34px !important;
-  padding-top: 28vh !important;
-  padding-bottom: 28vh !important;
+  padding-top: 40vh !important;
+  padding-bottom: 40vh !important;
   font-family: "Noto Sans", "Helvetica Neue", Arial, sans-serif !important;
   font-size: 16px !important;
   line-height: 1.5 !important;
@@ -611,88 +611,121 @@ a:hover, a:focus {
   color: var(--gc-link-hover) !important;
 }
 
-.alert, section.alert, div.alert {
-  padding: 15px 20px !important;
-  margin-bottom: 23px !important;
-  margin-top: 1em !important;
-  border: 1px solid transparent !important;
+.alert, section.alert, div.alert, aside.alert {
+  position: relative !important;
+  margin-top: 1.5em !important;
+  margin-bottom: 1.5em !important;
+  padding: 10px 0 8px 30px !important;
+  border: none !important;
   border-left: 6px solid #269abc !important;
-  border-radius: 4px !important;
-  background-color: transparent !important;
+  border-radius: 0 !important;
+  box-sizing: border-box !important;
+  display: block !important;
   background: transparent !important;
+  background-color: transparent !important;
   color: var(--gc-text, #f3f4f6) !important;
+}
+
+.alert::before {
+  content: "" !important;
+  position: absolute !important;
+  left: -16px !important;
+  top: 8px !important;
+  width: 26px !important;
+  height: 26px !important;
+  border-radius: 50% !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: contain !important;
+  box-shadow: 0 0 0 3.5px var(--gc-bg, #18181b) !important;
+  z-index: 2 !important;
+}
+body.gc-light-mode .alert::before {
+  box-shadow: 0 0 0 3.5px #ffffff !important;
 }
 
 .alert h1, .alert h2, .alert h3, .alert h4, .alert h5, .alert h6,
 .alert > h1, .alert > h2, .alert > h3, .alert > h4, .alert > h5, .alert > h6 {
   margin-top: 0 !important;
-  margin-bottom: 0.5em !important;
+  margin-bottom: 8px !important;
+  font-size: 1.35em !important;
   font-weight: 700 !important;
+  line-height: 1.3 !important;
+  letter-spacing: normal !important;
   color: #ffffff !important;
 }
 
-.alert p, .alert li, .alert span, .alert div {
-  color: var(--gc-text, #e2e8f0) !important;
-}
-
-.alert-info, section.alert-info, div.alert-info {
-  background-color: transparent !important;
-  background: transparent !important;
-  border: 1px solid transparent !important;
-  border-left: 6px solid #269abc !important;
+.alert p, .alert > p {
+  margin-top: 0 !important;
+  margin-bottom: 10px !important;
+  line-height: 1.5 !important;
   color: var(--gc-text, #f3f4f6) !important;
 }
-.alert-info h1, .alert-info h2, .alert-info h3, .alert-info h4, .alert-info h5, .alert-info h6,
-.alert-info > h1, .alert-info > h2, .alert-info > h3, .alert-info > h4, .alert-info > h5, .alert-info > h6 {
-  margin-top: 0 !important;
-  margin-bottom: 0.5em !important;
-  font-weight: 700 !important;
-  color: #ffffff !important;
-}
-.alert-info p, .alert-info li, .alert-info span, .alert-info div {
-  color: var(--gc-text, #e2e8f0) !important;
+
+.alert ul, .alert ol {
+  margin-top: 6px !important;
+  margin-bottom: 10px !important;
+  padding-left: 20px !important;
+  color: var(--gc-text, #f3f4f6) !important;
 }
 
-.alert-warning, section.alert-warning, div.alert-warning {
-  background-color: rgba(245, 158, 11, 0.14) !important;
-  border: 1px solid rgba(245, 158, 11, 0.28) !important;
-  border-left: 6px solid #f59e0b !important;
-  color: #fefce8 !important;
-}
-.alert-warning h1, .alert-warning h2, .alert-warning h3, .alert-warning h4, .alert-warning h5, .alert-warning h6,
-.alert-warning > h1, .alert-warning > h2, .alert-warning > h3, .alert-warning > h4, .alert-warning > h5, .alert-warning > h6 {
-  color: #fbbf24 !important;
+.alert li {
+  margin-bottom: 4px !important;
+  color: var(--gc-text, #f3f4f6) !important;
 }
 
-.alert-danger, section.alert-danger, div.alert-danger {
-  background-color: rgba(239, 68, 68, 0.14) !important;
-  border: 1px solid rgba(239, 68, 68, 0.28) !important;
-  border-left: 6px solid #ef4444 !important;
-  color: #fef2f2 !important;
-}
-.alert-danger h1, .alert-danger h2, .alert-danger h3, .alert-danger h4, .alert-danger h5, .alert-danger h6,
-.alert-danger > h1, .alert-danger > h2, .alert-danger > h3, .alert-danger > h4, .alert-danger > h5, .alert-danger > h6 {
-  color: #f87171 !important;
+.alert > :last-child,
+.alert p:last-child,
+.alert ul:last-child,
+.alert ol:last-child {
+  margin-bottom: 0 !important;
 }
 
-.alert-success, section.alert-success, div.alert-success {
-  background-color: rgba(34, 197, 94, 0.14) !important;
-  border: 1px solid rgba(34, 197, 94, 0.28) !important;
-  border-left: 6px solid #22c55e !important;
-  color: #f0fdf4 !important;
-}
-.alert-success h1, .alert-success h2, .alert-success h3, .alert-success h4, .alert-success h5, .alert-success h6,
-.alert-success > h1, .alert-success > h2, .alert-success > h3, .alert-success > h4, .alert-success > h5, .alert-success > h6 {
-  color: #4ade80 !important;
+.alert a, .alert .alert-link {
+  text-decoration: underline !important;
+  font-weight: 600 !important;
+  color: #93c5fd !important;
 }
 
+/* Info Alert (Default contextual alert on Canada.ca) */
+.alert-info, section.alert-info, div.alert-info, aside.alert-info,
+.alert:not(.alert-warning):not(.alert-danger):not(.alert-success) {
+  border-left-color: #269abc !important;
+}
+.alert-info::before, section.alert-info::before, div.alert-info::before, aside.alert-info::before,
+.alert:not(.alert-warning):not(.alert-danger):not(.alert-success)::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%23269abc'/%3E%3Ccircle cx='12' cy='7' r='1.6' fill='%23ffffff'/%3E%3Crect x='10.4' y='10.5' width='3.2' height='7.5' rx='1' fill='%23ffffff'/%3E%3C/svg%3E") !important;
+}
+
+/* Warning Alert */
+.alert-warning, section.alert-warning, div.alert-warning, aside.alert-warning {
+  border-left-color: #ee7100 !important;
+}
+.alert-warning::before, section.alert-warning::before, div.alert-warning::before, aside.alert-warning::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%23ee7100'/%3E%3Crect x='10.4' y='5.5' width='3.2' height='8.5' rx='1' fill='%23ffffff'/%3E%3Ccircle cx='12' cy='17.5' r='1.6' fill='%23ffffff'/%3E%3C/svg%3E") !important;
+}
+
+/* Danger Alert */
+.alert-danger, section.alert-danger, div.alert-danger, aside.alert-danger {
+  border-left-color: #d3080c !important;
+}
+.alert-danger::before, section.alert-danger::before, div.alert-danger::before, aside.alert-danger::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%23d3080c'/%3E%3Crect x='10.4' y='5.5' width='3.2' height='8.5' rx='1' fill='%23ffffff'/%3E%3Ccircle cx='12' cy='17.5' r='1.6' fill='%23ffffff'/%3E%3C/svg%3E") !important;
+}
+
+/* Success Alert */
+.alert-success, section.alert-success, div.alert-success, aside.alert-success {
+  border-left-color: #278400 !important;
+}
+.alert-success::before, section.alert-success::before, div.alert-success::before, aside.alert-success::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%23278400'/%3E%3Cpolyline points='6.5 12 10.5 16 17.5 8.5' fill='none' stroke='%23ffffff' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+}
+
+/* Light Mode Alert Overrides */
 body.gc-light-mode .alert,
 body.gc-light-mode section.alert,
-body.gc-light-mode div.alert {
-  background-color: transparent !important;
-  background: transparent !important;
-  border: 1px solid transparent !important;
-  border-left: 6px solid #269abc !important;
+body.gc-light-mode div.alert,
+body.gc-light-mode aside.alert {
   color: #333333 !important;
 }
 body.gc-light-mode .alert h1, body.gc-light-mode .alert h2, body.gc-light-mode .alert h3, body.gc-light-mode .alert h4, body.gc-light-mode .alert h5, body.gc-light-mode .alert h6,
@@ -702,55 +735,8 @@ body.gc-light-mode .alert > h1, body.gc-light-mode .alert > h2, body.gc-light-mo
 body.gc-light-mode .alert p, body.gc-light-mode .alert li, body.gc-light-mode .alert span, body.gc-light-mode .alert div {
   color: #333333 !important;
 }
-
-body.gc-light-mode .alert-info,
-body.gc-light-mode section.alert-info,
-body.gc-light-mode div.alert-info {
-  background-color: transparent !important;
-  background: transparent !important;
-  border: 1px solid transparent !important;
-  border-left: 6px solid #269abc !important;
-  color: #333333 !important;
-}
-body.gc-light-mode .alert-info h1, body.gc-light-mode .alert-info h2, body.gc-light-mode .alert-info h3, body.gc-light-mode .alert-info h4, body.gc-light-mode .alert-info h5, body.gc-light-mode .alert-info h6,
-body.gc-light-mode .alert-info > h1, body.gc-light-mode .alert-info > h2, body.gc-light-mode .alert-info > h3, body.gc-light-mode .alert-info > h4, body.gc-light-mode .alert-info > h5, body.gc-light-mode .alert-info > h6 {
-  color: #000000 !important;
-}
-body.gc-light-mode .alert-info p, body.gc-light-mode .alert-info li, body.gc-light-mode .alert-info span, body.gc-light-mode .alert-info div {
-  color: #333333 !important;
-}
-
-body.gc-light-mode .alert-warning {
-  background-color: #fcf8e3 !important;
-  border: 1px solid #faebcc !important;
-  border-left: 6px solid #ee7100 !important;
-  color: #8a6d3b !important;
-}
-body.gc-light-mode .alert-warning h1, body.gc-light-mode .alert-warning h2, body.gc-light-mode .alert-warning h3, body.gc-light-mode .alert-warning h4, body.gc-light-mode .alert-warning h5, body.gc-light-mode .alert-warning h6,
-body.gc-light-mode .alert-warning p, body.gc-light-mode .alert-warning li, body.gc-light-mode .alert-warning span {
-  color: #8a6d3b !important;
-}
-
-body.gc-light-mode .alert-danger {
-  background-color: #f2dede !important;
-  border: 1px solid #ebccd1 !important;
-  border-left: 6px solid #d3080c !important;
-  color: #a94442 !important;
-}
-body.gc-light-mode .alert-danger h1, body.gc-light-mode .alert-danger h2, body.gc-light-mode .alert-danger h3, body.gc-light-mode .alert-danger h4, body.gc-light-mode .alert-danger h5, body.gc-light-mode .alert-danger h6,
-body.gc-light-mode .alert-danger p, body.gc-light-mode .alert-danger li, body.gc-light-mode .alert-danger span {
-  color: #a94442 !important;
-}
-
-body.gc-light-mode .alert-success {
-  background-color: #dff0d8 !important;
-  border: 1px solid #d6e9c6 !important;
-  border-left: 6px solid #278400 !important;
-  color: #3c763d !important;
-}
-body.gc-light-mode .alert-success h1, body.gc-light-mode .alert-success h2, body.gc-light-mode .alert-success h3, body.gc-light-mode .alert-success h4, body.gc-light-mode .alert-success h5, body.gc-light-mode .alert-success h6,
-body.gc-light-mode .alert-success p, body.gc-light-mode .alert-success li, body.gc-light-mode .alert-success span {
-  color: #3c763d !important;
+body.gc-light-mode .alert a, body.gc-light-mode .alert .alert-link {
+  color: #284162 !important;
 }
 
 .panel {
@@ -1227,10 +1213,10 @@ function applyTheme(theme) {
   if (themeThumbIcon) {
     if (isDark) {
       themeThumbIcon.innerHTML = '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>';
-      themeThumbIcon.className = 'w-3 h-3 text-purple-400';
+      themeThumbIcon.setAttribute('class', 'w-3 h-3 text-purple-400');
     } else {
       themeThumbIcon.innerHTML = '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>';
-      themeThumbIcon.className = 'w-3 h-3 text-amber-500';
+      themeThumbIcon.setAttribute('class', 'w-3 h-3 text-amber-500');
     }
   }
 
@@ -1362,12 +1348,23 @@ function computeAlignment() {
   state.alignRows = rows;
   state.alignPairs = pairs;
   state.issueGroups = issues;
+  state.activePreviewBlock = 0;
+  state.lastKnownEnIndex = 0;
+  state.syncOffset = 0;
 
   renderStatsBar();
   buildDualIframePreviews();
+  updateSyncOffsetBadge();
+  updateSyncStatusLabel();
 
   previewSection.classList.add('show');
   previewSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  setTimeout(() => {
+    applyActiveHighlight();
+    alignPreviewBlocks(0);
+    updateActiveBlockHud(0);
+  }, 120);
 }
 
 function buildDualIframePreviews() {
@@ -1377,11 +1374,8 @@ function buildDualIframePreviews() {
 
   // English Frame Document
   const enDocHtml = buildFrameSource(state.enHtml, state.enBlocks, 'en');
-  // French Frame Document
-  const frInnerHtml = state.frBlocks
-    .map((b) => `<${b.tag}>${b.text}</${b.tag}>`)
-    .join('\n');
-  const frDocHtml = buildFrameSource(frInnerHtml, state.frBlocks, 'fr');
+  // French Frame Document (Cloned from English structure so alert boxes, panels, and layouts match 1:1)
+  const frDocHtml = buildFrenchFrameSource(state.enHtml, state.enBlocks, state.frBlocks, state.alignPairs);
 
   enPreviewFrame.srcdoc = enDocHtml;
   frPreviewFrame.srcdoc = frDocHtml;
@@ -1428,7 +1422,9 @@ function buildFrameSource(rawHtml, blocks, lang) {
       const target = e.target.closest('[data-swap-index]');
       if (target) {
         const idx = parseInt(target.getAttribute('data-swap-index'), 10);
-        window.parent.postMessage({ type: 'symmetra-jump', side: '${lang}', index: idx }, '*');
+        if (!isNaN(idx)) {
+          window.parent.postMessage({ type: 'symmetra-jump', side: '${lang}', index: idx }, '*');
+        }
       }
     });
 
@@ -1436,7 +1432,9 @@ function buildFrameSource(rawHtml, blocks, lang) {
       const target = e.target.closest('[data-swap-index]');
       if (target && '${lang}' === 'fr') {
         const idx = parseInt(target.getAttribute('data-swap-index'), 10);
-        window.parent.postMessage({ type: 'frEdit', index: idx, text: target.innerText }, '*');
+        if (!isNaN(idx)) {
+          window.parent.postMessage({ type: 'frEdit', index: idx, text: target.innerText }, '*');
+        }
       }
     });
   </script>
@@ -1444,58 +1442,398 @@ function buildFrameSource(rawHtml, blocks, lang) {
 </html>`;
 }
 
-function setupIframeEventListeners() {
-  let isSyncing = false;
+function buildFrenchFrameSource(rawEnHtml, enBlocks, frBlocks, alignPairs) {
+  if (!rawEnHtml) {
+    const frInnerHtml = frBlocks
+      .map((b) => `<${b.tag}>${b.text}</${b.tag}>`)
+      .join('\n');
+    return buildFrameSource(frInnerHtml, frBlocks, 'fr');
+  }
 
-  const handleFrameScroll = (sourceFrame, targetFrame, isEnSource) => {
-    if (!state.autoSync || state.syncPaused || isSyncing) return;
-    isSyncing = true;
+  const parser = new DOMParser();
+  let doc;
+  const hasHtmlTag = /<html[\s>]/i.test(rawEnHtml);
 
-    try {
-      const sWin = sourceFrame.contentWindow;
-      const tWin = targetFrame.contentWindow;
-      if (!sWin || !tWin) {
-        isSyncing = false;
-        return;
+  if (hasHtmlTag) {
+    doc = parser.parseFromString(rawEnHtml, 'text/html');
+  } else {
+    doc = parser.parseFromString('<html><head></head><body></body></html>', 'text/html');
+    doc.body.innerHTML = rawEnHtml;
+  }
+
+  if (doc.documentElement) {
+    doc.documentElement.setAttribute('lang', 'fr');
+  }
+
+  const domBlocks = extractBlocks(doc.body);
+  const usedFrIndices = new Set();
+
+  domBlocks.forEach((enBlock, enIdx) => {
+    const pair = alignPairs ? alignPairs.find((p) => p.enIndex === enIdx && !p.skip) : null;
+    if (pair && pair.frIndex !== null && frBlocks[pair.frIndex]) {
+      const frBlock = frBlocks[pair.frIndex];
+      usedFrIndices.add(pair.frIndex);
+      replaceBlockTextPreservingLinks(enBlock.el, frBlock.text, enBlock.attrTarget, frBlock.spans);
+      enBlock.el.setAttribute('data-swap-index', String(enIdx));
+      enBlock.el.setAttribute('data-fr-index', String(pair.frIndex));
+      enBlock.el.setAttribute('data-en-index', String(enIdx));
+      enBlock.el.setAttribute('contenteditable', 'true');
+      enBlock.el.classList.add('gc-swap-editable');
+    } else {
+      enBlock.el.setAttribute('data-swap-index', String(enIdx));
+      enBlock.el.setAttribute('data-en-index', String(enIdx));
+      enBlock.el.setAttribute('contenteditable', 'true');
+      enBlock.el.classList.add('gc-swap-editable', 'gc-swap-missing');
+    }
+  });
+
+  // Render extra French blocks if any weren't matched
+  const extraFrBlocks = [];
+  frBlocks.forEach((frBlock, frIdx) => {
+    if (!usedFrIndices.has(frIdx)) {
+      extraFrBlocks.push({ frBlock, frIdx });
+    }
+  });
+
+  if (extraFrBlocks.length > 0) {
+    const extraWrap = doc.createElement('section');
+    extraWrap.className = 'alert alert-warning';
+    extraWrap.style.marginTop = '28px';
+    const extraH = doc.createElement('h3');
+    extraH.textContent = 'Contenu français supplémentaire';
+    extraWrap.appendChild(extraH);
+
+    extraFrBlocks.forEach(({ frBlock, frIdx }) => {
+      const el = doc.createElement(frBlock.tag || 'p');
+      el.textContent = frBlock.text;
+      el.setAttribute('data-swap-index', `extra-${frIdx}`);
+      el.setAttribute('data-fr-index', String(frIdx));
+      el.setAttribute('contenteditable', 'true');
+      el.classList.add('gc-swap-editable');
+      extraWrap.appendChild(el);
+    });
+    doc.body.appendChild(extraWrap);
+  }
+
+  const isLight = state.theme === 'light';
+  const bodyClass = isLight ? 'gc-light-mode' : '';
+
+  return `<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>${HIGHLIGHT_CSS}</style>
+</head>
+<body class="${bodyClass}">
+  ${doc.body.innerHTML}
+  <script>
+    document.addEventListener('click', (e) => {
+      const target = e.target.closest('[data-swap-index]');
+      if (target) {
+        const rawIdx = target.getAttribute('data-swap-index');
+        const idx = parseInt(rawIdx, 10);
+        if (!isNaN(idx)) {
+          window.parent.postMessage({ type: 'symmetra-jump', side: 'fr', index: idx }, '*');
+        }
       }
+    });
 
-      const sDoc = sWin.document;
-      const tDoc = tWin.document;
-
-      const sScrollTop = sWin.scrollY || sDoc.documentElement.scrollTop;
-      const sScrollHeight = sDoc.documentElement.scrollHeight - sWin.innerHeight;
-
-      if (sScrollHeight <= 0) {
-        isSyncing = false;
-        return;
+    document.addEventListener('input', (e) => {
+      const target = e.target.closest('[data-swap-index]');
+      if (target) {
+        const enIdx = parseInt(target.getAttribute('data-en-index') || target.getAttribute('data-swap-index'), 10);
+        const frIdx = target.hasAttribute('data-fr-index') ? parseInt(target.getAttribute('data-fr-index'), 10) : null;
+        if (!isNaN(enIdx)) {
+          window.parent.postMessage({ type: 'frEdit', enIndex: enIdx, frIndex: frIdx, text: target.innerText }, '*');
+        }
       }
+    });
+  </script>
+</body>
+</html>`;
+}
 
-      const ratio = sScrollTop / sScrollHeight;
-      const tScrollHeight = tDoc.documentElement.scrollHeight - tWin.innerHeight;
-      let targetScroll = ratio * tScrollHeight;
+let isProgrammaticScroll = false;
 
-      if (state.syncOffset !== 0) {
-        targetScroll += state.syncOffset * 50;
+function getSyncItems(frame) {
+  try {
+    const doc = frame.contentDocument || frame.contentWindow.document;
+    if (!doc) return [];
+    const scrollEl = doc.scrollingElement || doc.documentElement;
+    return Array.from(doc.querySelectorAll('[data-swap-index]'))
+      .map((el) => ({
+        index: parseInt(el.getAttribute('data-swap-index'), 10),
+        el,
+      }))
+      .filter((o) => Number.isFinite(o.index))
+      .map((o) => ({
+        index: o.index,
+        el: o.el,
+        top: o.el.getBoundingClientRect().top + scrollEl.scrollTop,
+        height: o.el.getBoundingClientRect().height,
+      }))
+      .sort((a, b) => a.top - b.top);
+  } catch (_) {
+    return [];
+  }
+}
+
+function highlightIndexInFrame(frame, index) {
+  try {
+    const doc = frame.contentDocument || frame.contentWindow.document;
+    if (!doc) return;
+    doc.querySelectorAll('.gc-swap-active').forEach((el) => el.classList.remove('gc-swap-active'));
+    if (index === null || index === undefined || !Number.isFinite(index)) return;
+    const items = getSyncItems(frame);
+    if (!items.length) return;
+    let target = items.find((it) => it.index === index);
+    if (!target) {
+      target = items.reduce((best, it) =>
+        Math.abs(it.index - index) < Math.abs(best.index - index) ? it : best, items[0]);
+    }
+    if (target && target.el) {
+      target.el.classList.add('gc-swap-active');
+    }
+  } catch (_) {}
+}
+
+function applyActiveHighlight() {
+  highlightIndexInFrame(enPreviewFrame, state.activePreviewBlock);
+  highlightIndexInFrame(frPreviewFrame, state.activePreviewBlock);
+}
+
+function findTopIndexForFrame(frame) {
+  try {
+    const doc = frame.contentDocument || frame.contentWindow.document;
+    if (!doc) return null;
+    const scrollEl = doc.scrollingElement || doc.documentElement;
+    const items = getSyncItems(frame);
+    if (!items.length) return null;
+
+    const maxScroll = Math.max(0, scrollEl.scrollHeight - scrollEl.clientHeight);
+    if (scrollEl.scrollTop <= 30) return items[0].index;
+    if (maxScroll > 0 && scrollEl.scrollTop >= maxScroll - 30) return items[items.length - 1].index;
+
+    const viewportCenter = scrollEl.scrollTop + scrollEl.clientHeight / 2;
+    let candidate = items[0];
+    let minDistance = Infinity;
+
+    for (const item of items) {
+      if (viewportCenter >= item.top && viewportCenter <= item.top + item.height) {
+        return item.index;
       }
+      const itemCenter = item.top + item.height / 2;
+      const dist = Math.abs(itemCenter - viewportCenter);
+      if (dist < minDistance) {
+        minDistance = dist;
+        candidate = item;
+      }
+    }
+    return candidate.index;
+  } catch (_) {
+    return null;
+  }
+}
 
-      tWin.scrollTo({ top: targetScroll, behavior: 'auto' });
-    } catch (e) {
-      console.warn('Sync error:', e);
+function scrollFrameToIndex(frame, index) {
+  try {
+    const doc = frame.contentDocument || frame.contentWindow.document;
+    if (!doc) return;
+    const scrollEl = doc.scrollingElement || doc.documentElement;
+    const items = getSyncItems(frame);
+    if (!items.length) return;
+    let target = items.find((it) => it.index === index);
+    if (!target) {
+      target = items.reduce((best, it) =>
+        Math.abs(it.index - index) < Math.abs(best.index - index) ? it : best, items[0]);
+    }
+    if (!target) return;
+    const max = Math.max(0, scrollEl.scrollHeight - scrollEl.clientHeight);
+    if (items.indexOf(target) === 0 && index === 0) {
+      scrollEl.scrollTop = 0;
+      return;
+    }
+    if (items.indexOf(target) === items.length - 1 && index === state.enBlocks.length - 1) {
+      scrollEl.scrollTop = max;
+      return;
+    }
+    const destination = target.top + target.height / 2 - scrollEl.clientHeight / 2;
+    scrollEl.scrollTop = Math.max(0, Math.min(destination, max));
+  } catch (_) {}
+}
+
+function alignPreviewBlocks(index) {
+  if (!enPreviewFrame || !frPreviewFrame) return;
+
+  try {
+    const enDoc = enPreviewFrame.contentDocument || enPreviewFrame.contentWindow.document;
+    const frDoc = frPreviewFrame.contentDocument || frPreviewFrame.contentWindow.document;
+    if (!enDoc || !frDoc) return;
+
+    const enScroll = enDoc.scrollingElement || enDoc.documentElement;
+    const frScroll = frDoc.scrollingElement || frDoc.documentElement;
+
+    const enEl = enDoc.querySelector(`[data-swap-index="${index}"]`);
+    const frEl = frDoc.querySelector(`[data-swap-index="${index}"]`);
+
+    if (!enEl && !frEl) return;
+
+    isProgrammaticScroll = true;
+
+    if (enEl) {
+      if (index === 0) {
+        enScroll.scrollTop = 0;
+      } else if (index === state.enBlocks.length - 1) {
+        enScroll.scrollTop = Math.max(0, enScroll.scrollHeight - enScroll.clientHeight);
+      } else {
+        const enRect = enEl.getBoundingClientRect();
+        const enTop = enRect.top + enScroll.scrollTop;
+        const enMax = Math.max(0, enScroll.scrollHeight - enScroll.clientHeight);
+        const enDestination = enTop + enRect.height / 2 - enScroll.clientHeight / 2;
+        enScroll.scrollTop = Math.max(0, Math.min(enDestination, enMax));
+      }
+    }
+
+    if (frEl) {
+      if (index === 0 && state.syncOffset === 0) {
+        frScroll.scrollTop = 0;
+      } else if (index === state.enBlocks.length - 1 && state.syncOffset === 0) {
+        frScroll.scrollTop = Math.max(0, frScroll.scrollHeight - frScroll.clientHeight);
+      } else {
+        const frRect = frEl.getBoundingClientRect();
+        const frTop = frRect.top + frScroll.scrollTop;
+        const frMax = Math.max(0, frScroll.scrollHeight - frScroll.clientHeight);
+        const frDestination = frTop + frRect.height / 2 - frScroll.clientHeight / 2;
+        frScroll.scrollTop = Math.max(0, Math.min(frDestination, frMax));
+      }
     }
 
     setTimeout(() => {
-      isSyncing = false;
-    }, 40);
-  };
+      isProgrammaticScroll = false;
+    }, 80);
+  } catch (_) {
+    isProgrammaticScroll = false;
+  }
+}
 
-  const attachScroll = (frame, target, isEn) => {
+function jumpToBlock(enIdx) {
+  if (enIdx < 0 || enIdx >= state.enBlocks.length) return;
+  state.activePreviewBlock = enIdx;
+  state.lastKnownEnIndex = enIdx;
+
+  applyActiveHighlight();
+  updateActiveBlockHud(enIdx);
+  alignPreviewBlocks(enIdx);
+}
+
+function updateActiveBlockHud(enIdx) {
+  if (!activeBlockHudText || !activeBlockHudTag) return;
+  const total = state.enBlocks ? state.enBlocks.length : 0;
+  const currentBlock = state.enBlocks && state.enBlocks[enIdx] ? state.enBlocks[enIdx] : null;
+  const tag = currentBlock ? `<${currentBlock.tag}>` : '';
+  const displayNum = total > 0 ? Math.min(Math.max(enIdx + 1, 1), total) : 0;
+  activeBlockHudText.textContent = `Block ${displayNum}/${total}`;
+  activeBlockHudTag.textContent = tag;
+}
+
+function syncScroll(sourceFrame, targetFrame) {
+  if (isProgrammaticScroll) return;
+
+  try {
+    const srcDoc = sourceFrame.contentDocument || sourceFrame.contentWindow.document;
+    if (!srcDoc) return;
+    const srcScroll = srcDoc.scrollingElement || srcDoc.documentElement;
+    const srcItems = getSyncItems(sourceFrame);
+    if (!srcItems.length) return;
+
+    const maxScroll = Math.max(0, srcScroll.scrollHeight - srcScroll.clientHeight);
+    const viewportCenter = srcScroll.scrollTop + srcScroll.clientHeight / 2;
+
+    let candidate = srcItems[0];
+    if (srcScroll.scrollTop <= 30) {
+      candidate = srcItems[0];
+    } else if (maxScroll > 0 && srcScroll.scrollTop >= maxScroll - 30) {
+      candidate = srcItems[srcItems.length - 1];
+    } else {
+      let minDistance = Infinity;
+      for (const item of srcItems) {
+        if (viewportCenter >= item.top && viewportCenter <= item.top + item.height) {
+          candidate = item;
+          break;
+        }
+        const itemCenter = item.top + item.height / 2;
+        const dist = Math.abs(itemCenter - viewportCenter);
+        if (dist < minDistance) {
+          minDistance = dist;
+          candidate = item;
+        }
+      }
+    }
+
+    const pixelOffset = viewportCenter - candidate.top;
+    const sourceIndex = candidate.index;
+    const isEn = sourceFrame === enPreviewFrame;
+    const enIndex = isEn ? sourceIndex : sourceIndex - state.syncOffset;
+
+    state.lastKnownEnIndex = enIndex;
+    state.activePreviewBlock = Math.max(0, Math.min(enIndex, state.enBlocks.length - 1));
+
+    // The highlighted bar actively follows the scroll position!
+    highlightIndexInFrame(sourceFrame, sourceIndex);
+    updateActiveBlockHud(state.activePreviewBlock);
+
+    // If auto-sync is enabled and not paused with Alt, synchronize the target frame too
+    if (state.autoSync && !state.syncPaused) {
+      const targetIndex = isEn ? sourceIndex + state.syncOffset : enIndex;
+      highlightIndexInFrame(targetFrame, targetIndex);
+
+      const targetDoc = targetFrame.contentDocument || targetFrame.contentWindow.document;
+      if (!targetDoc) return;
+      const targetScroll = targetDoc.scrollingElement || targetDoc.documentElement;
+      const targetItems = getSyncItems(targetFrame);
+      if (!targetItems.length) return;
+
+      let targetItem = targetItems.find((it) => it.index === targetIndex);
+      if (!targetItem) {
+        targetItem = targetItems.reduce((best, it) =>
+          Math.abs(it.index - targetIndex) < Math.abs(best.index - targetIndex) ? it : best, targetItems[0]);
+      }
+
+      isProgrammaticScroll = true;
+      const targetMax = Math.max(0, targetScroll.scrollHeight - targetScroll.clientHeight);
+
+      if (srcScroll.scrollTop <= 30 && state.syncOffset === 0) {
+        targetScroll.scrollTop = 0;
+      } else if (maxScroll > 0 && srcScroll.scrollTop >= maxScroll - 30 && state.syncOffset === 0) {
+        targetScroll.scrollTop = targetMax;
+      } else {
+        const destination = targetItem.top + pixelOffset - targetScroll.clientHeight / 2;
+        targetScroll.scrollTop = Math.max(0, Math.min(destination, targetMax));
+      }
+
+      setTimeout(() => {
+        isProgrammaticScroll = false;
+      }, 80);
+    }
+  } catch (_) {
+    isProgrammaticScroll = false;
+  }
+}
+
+function setupIframeEventListeners() {
+  const attachScroll = (frame, targetFrame) => {
     frame.addEventListener('load', () => {
       updateIframesTheme();
       try {
         const win = frame.contentWindow;
         if (!win) return;
-        win.addEventListener('scroll', () => handleFrameScroll(frame, target, isEn), { passive: true });
-        
+        if (win._symmetraScrollHandler) {
+          win.removeEventListener('scroll', win._symmetraScrollHandler);
+        }
+        win._symmetraScrollHandler = () => syncScroll(frame, targetFrame);
+        win.addEventListener('scroll', win._symmetraScrollHandler, { passive: true });
+
         // Attach keydown for keyboard navigation from inside frame
         win.addEventListener('keydown', (e) => {
           handleKeyNavigation(e);
@@ -1506,8 +1844,8 @@ function setupIframeEventListeners() {
     });
   };
 
-  attachScroll(enPreviewFrame, frPreviewFrame, true);
-  attachScroll(frPreviewFrame, enPreviewFrame, false);
+  attachScroll(enPreviewFrame, frPreviewFrame);
+  attachScroll(frPreviewFrame, enPreviewFrame);
 }
 
 // Global PostMessage receiver for iframe clicks and edits
@@ -1515,74 +1853,47 @@ window.addEventListener('message', (e) => {
   if (!e.data || typeof e.data !== 'object') return;
 
   if (e.data.type === 'symmetra-jump') {
-    const { side, index } = e.data;
-    if (side === 'en') {
+    const { index } = e.data;
+    if (typeof index === 'number' && !isNaN(index)) {
       jumpToBlock(index);
-    } else {
-      const matchPair = state.alignPairs.find((p) => p.frIndex === index);
-      if (matchPair && matchPair.enIndex !== null) {
-        jumpToBlock(matchPair.enIndex);
-      } else {
-        highlightBlockInFrames(null, index);
-      }
     }
   } else if (e.data.type === 'frEdit') {
-    const { index, text } = e.data;
-    if (state.frBlocks[index]) {
-      state.frBlocks[index].text = text;
-      // Re-extract inline spans if needed
+    const { enIndex, frIndex, text } = e.data;
+    if (frIndex !== null && state.frBlocks[frIndex]) {
+      state.frBlocks[frIndex].text = text;
+    } else if (enIndex !== null) {
+      const pair = state.alignPairs.find((p) => p.enIndex === enIndex);
+      if (pair && pair.frIndex !== null && state.frBlocks[pair.frIndex]) {
+        state.frBlocks[pair.frIndex].text = text;
+      }
     }
   }
 });
 
-function jumpToBlock(enIdx) {
-  if (enIdx < 0 || enIdx >= state.enBlocks.length) return;
-  state.activePreviewBlock = enIdx;
-
-  const pair = state.alignPairs.find((p) => p.enIndex === enIdx);
-  const frIdx = pair && pair.frIndex !== null ? pair.frIndex : null;
-
-  highlightBlockInFrames(enIdx, frIdx);
-  updateActiveBlockHud(enIdx);
+function nudgeSync(delta) {
+  state.syncOffset += delta;
+  updateSyncOffsetBadge();
+  const currentEnIndex = findTopIndexForFrame(enPreviewFrame);
+  if (currentEnIndex !== null) state.lastKnownEnIndex = currentEnIndex;
+  scrollFrameToIndex(frPreviewFrame, state.lastKnownEnIndex + state.syncOffset);
+  applyActiveHighlight();
 }
 
-function highlightBlockInFrames(enIdx, frIdx) {
-  try {
-    const enDoc = enPreviewFrame.contentDocument;
-    const frDoc = frPreviewFrame.contentDocument;
-
-    if (enDoc) {
-      enDoc.querySelectorAll('.gc-swap-active').forEach((el) => el.classList.remove('gc-swap-active'));
-      if (enIdx !== null) {
-        const target = enDoc.querySelector(`[data-swap-index="${enIdx}"]`);
-        if (target) {
-          target.classList.add('gc-swap-active');
-          target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-      }
-    }
-
-    if (frDoc) {
-      frDoc.querySelectorAll('.gc-swap-active').forEach((el) => el.classList.remove('gc-swap-active'));
-      if (frIdx !== null) {
-        const target = frDoc.querySelector(`[data-swap-index="${frIdx}"]`);
-        if (target) {
-          target.classList.add('gc-swap-active');
-          target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-      }
-    }
-  } catch (e) {
-    console.warn('Highlight block error', e);
+function updateSyncStatusLabel() {
+  if (!enSyncStatus || !frSyncStatus) return;
+  let text = '● synced';
+  let color = '#10b981';
+  if (!state.autoSync) {
+    text = '○ manual';
+    color = '#94a3b8';
+  } else if (state.syncPaused) {
+    text = '● paused (hold Alt)';
+    color = '#ee7100';
   }
-}
-
-function updateActiveBlockHud(enIdx) {
-  const total = state.enBlocks.length;
-  const currentBlock = state.enBlocks[enIdx];
-  const tag = currentBlock ? `<${currentBlock.tag}>` : '';
-  activeBlockHudText.textContent = `Block ${enIdx + 1}/${total}`;
-  activeBlockHudTag.textContent = tag;
+  enSyncStatus.textContent = text;
+  frSyncStatus.textContent = text;
+  enSyncStatus.style.color = color;
+  frSyncStatus.style.color = color;
 }
 
 // Bottom Stats HUD and Inspector Drawer
@@ -1880,30 +2191,97 @@ function handleGenerateOutput() {
   <link rel="stylesheet" href="https://wet-boew.github.io/themes-dist/GCWeb/GCWeb/css/theme.min.css">
   <style>
     body { padding: 24px; font-family: "Noto Sans", sans-serif; }
-    .alert-info, section.alert-info, div.alert-info,
-    .alert:not(.alert-warning):not(.alert-danger):not(.alert-success) {
-      background-color: transparent !important;
-      background: transparent !important;
-      border: 1px solid transparent !important;
+    
+    .alert, section.alert, div.alert, aside.alert {
+      position: relative !important;
+      margin-top: 1.5em !important;
+      margin-bottom: 1.5em !important;
+      padding: 10px 0 8px 30px !important;
+      border: none !important;
       border-left: 6px solid #269abc !important;
+      border-radius: 0 !important;
+      box-sizing: border-box !important;
+      display: block !important;
+      background: transparent !important;
+      background-color: transparent !important;
       color: #333333 !important;
     }
-    .alert-info h1, .alert-info h2, .alert-info h3, .alert-info h4, .alert-info h5, .alert-info h6,
-    .alert:not(.alert-warning):not(.alert-danger):not(.alert-success) h1,
-    .alert:not(.alert-warning):not(.alert-danger):not(.alert-success) h2,
-    .alert:not(.alert-warning):not(.alert-danger):not(.alert-success) h3,
-    .alert:not(.alert-warning):not(.alert-danger):not(.alert-success) h4,
-    .alert:not(.alert-warning):not(.alert-danger):not(.alert-success) h5,
-    .alert:not(.alert-warning):not(.alert-danger):not(.alert-success) h6 {
-      color: #000000 !important;
+    .alert::before {
+      content: "" !important;
+      position: absolute !important;
+      left: -16px !important;
+      top: 8px !important;
+      width: 26px !important;
+      height: 26px !important;
+      border-radius: 50% !important;
+      background-position: center !important;
+      background-repeat: no-repeat !important;
+      background-size: contain !important;
+      box-shadow: 0 0 0 3.5px #ffffff !important;
+      z-index: 2 !important;
+    }
+    .alert h1, .alert h2, .alert h3, .alert h4, .alert h5, .alert h6,
+    .alert > h1, .alert > h2, .alert > h3, .alert > h4, .alert > h5, .alert > h6 {
       margin-top: 0 !important;
+      margin-bottom: 8px !important;
+      font-size: 1.35em !important;
       font-weight: 700 !important;
+      line-height: 1.3 !important;
+      color: #000000 !important;
     }
-    .alert-info p, .alert-info li, .alert-info span,
-    .alert:not(.alert-warning):not(.alert-danger):not(.alert-success) p,
-    .alert:not(.alert-warning):not(.alert-danger):not(.alert-success) li,
-    .alert:not(.alert-warning):not(.alert-danger):not(.alert-success) span {
+    .alert p, .alert > p {
+      margin-top: 0 !important;
+      margin-bottom: 10px !important;
+      line-height: 1.5 !important;
       color: #333333 !important;
+    }
+    .alert ul, .alert ol {
+      margin-top: 6px !important;
+      margin-bottom: 10px !important;
+      padding-left: 20px !important;
+      color: #333333 !important;
+    }
+    .alert > :last-child, .alert p:last-child, .alert ul:last-child, .alert ol:last-child {
+      margin-bottom: 0 !important;
+    }
+    .alert a, .alert .alert-link {
+      text-decoration: underline !important;
+      font-weight: 600 !important;
+      color: #284162 !important;
+    }
+
+    /* Info Alert (Default contextual alert on Canada.ca) */
+    .alert-info, section.alert-info, div.alert-info, aside.alert-info,
+    .alert:not(.alert-warning):not(.alert-danger):not(.alert-success) {
+      border-left-color: #269abc !important;
+    }
+    .alert-info::before, section.alert-info::before, div.alert-info::before, aside.alert-info::before,
+    .alert:not(.alert-warning):not(.alert-danger):not(.alert-success)::before {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%23269abc'/%3E%3Ccircle cx='12' cy='7' r='1.6' fill='%23ffffff'/%3E%3Crect x='10.4' y='10.5' width='3.2' height='7.5' rx='1' fill='%23ffffff'/%3E%3C/svg%3E") !important;
+    }
+
+    /* Warning Alert */
+    .alert-warning, section.alert-warning, div.alert-warning, aside.alert-warning {
+      border-left-color: #ee7100 !important;
+    }
+    .alert-warning::before, section.alert-warning::before, div.alert-warning::before, aside.alert-warning::before {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%23ee7100'/%3E%3Crect x='10.4' y='5.5' width='3.2' height='8.5' rx='1' fill='%23ffffff'/%3E%3Ccircle cx='12' cy='17.5' r='1.6' fill='%23ffffff'/%3E%3C/svg%3E") !important;
+    }
+
+    /* Danger Alert */
+    .alert-danger, section.alert-danger, div.alert-danger, aside.alert-danger {
+      border-left-color: #d3080c !important;
+    }
+    .alert-danger::before, section.alert-danger::before, div.alert-danger::before, aside.alert-danger::before {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%23d3080c'/%3E%3Crect x='10.4' y='5.5' width='3.2' height='8.5' rx='1' fill='%23ffffff'/%3E%3Ccircle cx='12' cy='17.5' r='1.6' fill='%23ffffff'/%3E%3C/svg%3E") !important;
+    }
+
+    /* Success Alert */
+    .alert-success, section.alert-success, div.alert-success, aside.alert-success {
+      border-left-color: #278400 !important;
+    }
+    .alert-success::before, section.alert-success::before, div.alert-success::before, aside.alert-success::before {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%23278400'/%3E%3Cpolyline points='6.5 12 10.5 16 17.5 8.5' fill='none' stroke='%23ffffff' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
     }
   </style>
 </head>
@@ -1938,12 +2316,10 @@ function handleKeyNavigation(e) {
     }
   } else if (e.key === '[') {
     e.preventDefault();
-    state.syncOffset -= 1;
-    updateSyncOffsetBadge();
+    nudgeSync(-1);
   } else if (e.key === ']') {
     e.preventDefault();
-    state.syncOffset += 1;
-    updateSyncOffsetBadge();
+    nudgeSync(1);
   } else if (e.key === 'Escape') {
     if (state.drawerOpen) closeDrawer();
   }
@@ -2044,25 +2420,21 @@ function initEventListeners() {
     state.autoSync = !state.autoSync;
     toggleAutoSync.classList.toggle('is-active', state.autoSync);
     toggleAutoSync.querySelector('span').textContent = state.autoSync ? 'Auto-sync on' : 'Auto-sync off';
-    enSyncStatus.textContent = state.autoSync ? '● synced' : '○ un-synced';
-    frSyncStatus.textContent = state.autoSync ? '● synced' : '○ un-synced';
-    enSyncStatus.style.color = state.autoSync ? '#10b981' : '#94a3b8';
-    frSyncStatus.style.color = state.autoSync ? '#10b981' : '#94a3b8';
+    updateSyncStatusLabel();
   });
 
   rightBack.addEventListener('click', () => {
-    state.syncOffset -= 1;
-    updateSyncOffsetBadge();
+    nudgeSync(-1);
   });
 
   rightForward.addEventListener('click', () => {
-    state.syncOffset += 1;
-    updateSyncOffsetBadge();
+    nudgeSync(1);
   });
 
   resetSyncOffset.addEventListener('click', () => {
     state.syncOffset = 0;
     updateSyncOffsetBadge();
+    nudgeSync(0);
     showToast('Sync offset reset');
   });
 
@@ -2125,12 +2497,18 @@ function initEventListeners() {
 
   // Global Alt key detection to pause sync
   window.addEventListener('keydown', (e) => {
-    if (e.key === 'Alt') state.syncPaused = true;
+    if (e.key === 'Alt') {
+      state.syncPaused = true;
+      updateSyncStatusLabel();
+    }
     handleKeyNavigation(e);
   });
 
   window.addEventListener('keyup', (e) => {
-    if (e.key === 'Alt') state.syncPaused = false;
+    if (e.key === 'Alt') {
+      state.syncPaused = false;
+      updateSyncStatusLabel();
+    }
   });
 
   // Output Section Tabs
