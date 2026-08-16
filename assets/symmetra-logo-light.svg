@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 120" fill="none">
+  <defs>
+    <linearGradient id="topWingGrad" x1="20" y1="20" x2="130" y2="80" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#00b4d8"/>
+      <stop offset="50%" stop-color="#0284c7"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+    <linearGradient id="foldGrad" x1="45" y1="50" x2="105" y2="75" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0369a1"/>
+      <stop offset="50%" stop-color="#1e3a8a"/>
+      <stop offset="100%" stop-color="#4338ca"/>
+    </linearGradient>
+    <linearGradient id="botWingGrad" x1="30" y1="60" x2="130" y2="105" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#4f46e5"/>
+      <stop offset="45%" stop-color="#7c3aed"/>
+      <stop offset="85%" stop-color="#c026d3"/>
+      <stop offset="100%" stop-color="#ec4899"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(10, 8)">
+    <path d="M 68 12 C 92 12, 122 18, 122 36 C 122 48, 102 62, 75 74 C 52 84, 38 78, 30 66 C 22 52, 34 32, 48 20 C 54 15, 61 12, 68 12 Z" fill="url(#topWingGrad)" />
+    <path d="M 48 48 L 86 32 C 98 42, 94 62, 78 72 L 42 86 C 32 76, 36 58, 48 48 Z" fill="url(#foldGrad)" opacity="0.9" />
+    <path d="M 45 46 C 62 38, 86 52, 95 65 C 106 80, 114 96, 96 102 C 82 107, 56 104, 38 92 C 22 81, 22 62, 35 52 C 38 49, 41 47, 45 46 Z" fill="url(#botWingGrad)" />
+    <rect x="66" y="27" width="28" height="4.2" rx="2.1" fill="#ffffff" />
+    <rect x="61" y="36" width="33" height="4.2" rx="2.1" fill="#ffffff" />
+    <rect x="68" y="45" width="26" height="4.2" rx="2.1" fill="#ffffff" />
+    <rect x="42" y="66" width="26" height="4.2" rx="2.1" fill="#ffffff" />
+    <rect x="37" y="75" width="33" height="4.2" rx="2.1" fill="#ffffff" />
+    <rect x="44" y="84" width="28" height="4.2" rx="2.1" fill="#ffffff" />
+  </g>
+  <text x="145" y="74" font-family="'Lato', 'Noto Sans', 'Segoe UI', system-ui, -apple-system, sans-serif" font-size="44" font-weight="900" letter-spacing="-1.2px" fill="#0f172a">Symmetra</text>
+</svg>

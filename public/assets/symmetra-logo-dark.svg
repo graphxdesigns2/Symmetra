@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 130" width="520" height="130" fill="none">
+  <defs>
+    <!-- Top Ribbon Gradient: Vibrant Cyan to Electric Royal Blue -->
+    <linearGradient id="topCyanBlueDark" x1="15%" y1="10%" x2="85%" y2="85%">
+      <stop offset="0%" stop-color="#00c8f8"/>
+      <stop offset="45%" stop-color="#0096e6"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+
+    <!-- Center Fold Gradient: Deep Navy & Indigo Twist -->
+    <linearGradient id="centerFoldDark" x1="20%" y1="20%" x2="80%" y2="80%">
+      <stop offset="0%" stop-color="#0284c7"/>
+      <stop offset="40%" stop-color="#1e3a8a"/>
+      <stop offset="100%" stop-color="#3730a3"/>
+    </linearGradient>
+
+    <!-- Bottom Ribbon Gradient: Violet to Electric Pink/Magenta -->
+    <linearGradient id="botVioletPinkDark" x1="15%" y1="15%" x2="85%" y2="90%">
+      <stop offset="0%" stop-color="#4f46e5"/>
+      <stop offset="40%" stop-color="#7c3aed"/>
+      <stop offset="75%" stop-color="#c026d3"/>
+      <stop offset="100%" stop-color="#ec4899"/>
+    </linearGradient>
+
+    <filter id="softGlowDark" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#8b5cf6" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <g transform="translate(12, 10)" filter="url(#softGlowDark)">
+    <!-- Top Wing Shape -->
+    <path d="M 68 8 
+             C 98 8, 126 16, 126 36 
+             C 126 49, 106 63, 76 75
+             C 52 85, 36 78, 28 65 
+             C 19 50, 31 28, 48 16 
+             C 55 11, 61 8, 68 8 Z" 
+          fill="url(#topCyanBlueDark)" />
+
+    <!-- Ribbon Fold Overlap -->
+    <path d="M 46 48 
+             L 86 32 
+             C 98 42, 94 62, 78 72 
+             L 40 88 
+             C 29 77, 34 58, 46 48 Z" 
+          fill="url(#centerFoldDark)" opacity="0.95" />
+
+    <!-- Bottom Wing Shape -->
+    <path d="M 45 44
+             C 64 36, 88 50, 97 64
+             C 108 80, 116 97, 98 103
+             C 84 108, 56 104, 37 91
+             C 20 79, 20 59, 34 49
+             C 38 46, 41 44, 45 44 Z" 
+          fill="url(#botVioletPinkDark)" />
+
+    <!-- Top Wing Document Lines -->
+    <rect x="68" y="24" width="30" height="4.5" rx="2.25" fill="#ffffff" />
+    <rect x="62" y="34" width="36" height="4.5" rx="2.25" fill="#ffffff" />
+    <rect x="70" y="44" width="28" height="4.5" rx="2.25" fill="#ffffff" />
+
+    <!-- Bottom Wing Document Lines -->
+    <rect x="42" y="65" width="28" height="4.5" rx="2.25" fill="#ffffff" />
+    <rect x="36" y="75" width="36" height="4.5" rx="2.25" fill="#ffffff" />
+    <rect x="44" y="85" width="30" height="4.5" rx="2.25" fill="#ffffff" />
+  </g>
+
+  <!-- Symmetra Wordmark (Dark Mode - Crisp White) -->
+  <text x="156" y="76" 
+        font-family="-apple-system, BlinkMacSystemFont, 'Montserrat', 'Outfit', 'Plus Jakarta Sans', 'Segoe UI', system-ui, sans-serif" 
+        font-size="52" 
+        font-weight="800" 
+        letter-spacing="-1.5px" 
+        fill="#ffffff">Symmetra</text>
+</svg>
