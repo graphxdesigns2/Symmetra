@@ -1110,6 +1110,7 @@ const state = {
   blurMode: false,
   outputHtml: '',
   outputTab: 'preview', // 'preview' | 'code'
+  frViewMode: 'visual', // 'visual' | 'code'
 };
 
 // DOM Element References
@@ -1127,6 +1128,13 @@ const docxFile = document.getElementById('docxFile');
 const docxStatWrap = document.getElementById('docxStatWrap');
 const loadSampleFrBtn = document.getElementById('loadSampleFrBtn');
 
+const sourceUploadSection = document.getElementById('sourceUploadSection');
+const sourceCondensedBar = document.getElementById('sourceCondensedBar');
+const condensedEnStat = document.getElementById('condensedEnStat');
+const condensedFrStat = document.getElementById('condensedFrStat');
+const expandSourcesBtn = document.getElementById('expandSourcesBtn');
+const collapseSourcesBtn = document.getElementById('collapseSourcesBtn');
+
 const alignBtn = document.getElementById('alignBtn');
 const previewSection = document.getElementById('previewSection');
 const toggleFocusMode = document.getElementById('toggleFocusMode');
@@ -1135,7 +1143,6 @@ const toggleAutoSync = document.getElementById('toggleAutoSync');
 const rightBack = document.getElementById('rightBack');
 const rightForward = document.getElementById('rightForward');
 const resetSyncOffset = document.getElementById('resetSyncOffset');
-const exportFromViewBtn = document.getElementById('exportFromViewBtn');
 
 const enBlockCountBadge = document.getElementById('enBlockCountBadge');
 const frBlockCountBadge = document.getElementById('frBlockCountBadge');
@@ -1143,6 +1150,16 @@ const enSyncStatus = document.getElementById('enSyncStatus');
 const frSyncStatus = document.getElementById('frSyncStatus');
 const enPreviewFrame = document.getElementById('enPreviewFrame');
 const frPreviewFrame = document.getElementById('frPreviewFrame');
+
+// French Pane View Toggle & Code View Elements
+const frPaneTitle = document.getElementById('frPaneTitle');
+const frViewVisualBtn = document.getElementById('frViewVisualBtn');
+const frViewCodeBtn = document.getElementById('frViewCodeBtn');
+const frCodeWrap = document.getElementById('frCodeWrap');
+const frCodeEditor = document.getElementById('frCodeEditor');
+const frCodeStats = document.getElementById('frCodeStats');
+const copyFrCodeBtn = document.getElementById('copyFrCodeBtn');
+const formatFrCodeBtn = document.getElementById('formatFrCodeBtn');
 
 const statDetailPanel = document.getElementById('statDetailPanel');
 const drawerBody = document.getElementById('drawerBody');
@@ -1166,14 +1183,7 @@ const jumpForm = document.getElementById('jumpForm');
 const jumpInput = document.getElementById('jumpInput');
 const syncOffsetBadge = document.getElementById('syncOffsetBadge');
 
-const generateBtn = document.getElementById('generateBtn');
-const outputSection = document.getElementById('outputSection');
-const tabPreview = document.getElementById('tabPreview');
-const tabCode = document.getElementById('tabCode');
-const previewFrame = document.getElementById('previewFrame');
-const codeOut = document.getElementById('codeOut');
-const copyCodeBtn = document.getElementById('copyCodeBtn');
-const downloadHtmlBtn = document.getElementById('downloadHtmlBtn');
+const downloadFrCodeBtn = document.getElementById('downloadFrCodeBtn');
 const toast = document.getElementById('toast');
 
 // Toast helper
@@ -1265,6 +1275,9 @@ function analyzeEnglishHtml() {
     state.enParsed = res;
     htmlStat.innerHTML = `<span class="text-emerald-600 dark:text-emerald-400 font-semibold">${res.count} text block(s) found</span>`;
   }
+  if (condensedEnStat) {
+    condensedEnStat.textContent = `${state.enBlocks.length} block(s)`;
+  }
   checkAlignReady();
 }
 
@@ -1299,6 +1312,14 @@ function renderDocxStat(count, filename) {
       </div>`;
   }
 
+  if (condensedFrStat) {
+    if (!count) {
+      condensedFrStat.textContent = '0 blocks';
+    } else {
+      condensedFrStat.textContent = `${filename} (${count} block(s))`;
+    }
+  }
+
   const clr = document.getElementById('clearDocxBtn');
   if (clr) {
     clr.addEventListener('click', () => {
@@ -1306,6 +1327,7 @@ function renderDocxStat(count, filename) {
       state.frDocxName = '';
       docxStatWrap.innerHTML = '';
       if (docxFile) docxFile.value = '';
+      if (condensedFrStat) condensedFrStat.textContent = '0 blocks';
       checkAlignReady();
     });
   }
@@ -1337,6 +1359,29 @@ function checkAlignReady() {
   alignBtn.disabled = !ready;
 }
 
+function condenseSources() {
+  if (!sourceUploadSection) return;
+  state.sourcesCondensed = true;
+  if (condensedEnStat) {
+    condensedEnStat.textContent = `${state.enBlocks.length} block(s)`;
+  }
+  if (condensedFrStat) {
+    const docName = state.frDocxName || 'Uploaded .docx';
+    condensedFrStat.textContent = `${docName} (${state.frBlocks.length} block(s))`;
+  }
+  sourceUploadSection.classList.add('is-condensed');
+  if (collapseSourcesBtn) {
+    collapseSourcesBtn.style.display = 'inline-flex';
+  }
+}
+
+function expandSources() {
+  if (!sourceUploadSection) return;
+  state.sourcesCondensed = false;
+  sourceUploadSection.classList.remove('is-condensed');
+  sourceUploadSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 // Alignment and Dual Pane Rendering
 function computeAlignment() {
   const enTags = state.enBlocks.map((b) => b.tag);
@@ -1357,8 +1402,10 @@ function computeAlignment() {
   updateSyncOffsetBadge();
   updateSyncStatusLabel();
 
+  // Condense the source HTML & Word Document upload panels
+  condenseSources();
+
   previewSection.classList.add('show');
-  previewSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
   setTimeout(() => {
     applyActiveHighlight();
@@ -1368,9 +1415,9 @@ function computeAlignment() {
 }
 
 function buildDualIframePreviews() {
-  // Update block badges
-  enBlockCountBadge.textContent = `${state.enBlocks.length} blocks`;
-  frBlockCountBadge.textContent = `${state.frBlocks.length} blocks`;
+  // Update block badges if present
+  if (enBlockCountBadge) enBlockCountBadge.textContent = `${state.enBlocks.length} blocks`;
+  if (frBlockCountBadge) frBlockCountBadge.textContent = `${state.frBlocks.length} blocks`;
 
   // English Frame Document
   const enDocHtml = buildFrameSource(state.enHtml, state.enBlocks, 'en');
@@ -1880,7 +1927,6 @@ function nudgeSync(delta) {
 }
 
 function updateSyncStatusLabel() {
-  if (!enSyncStatus || !frSyncStatus) return;
   let text = '● synced';
   let color = '#10b981';
   if (!state.autoSync) {
@@ -1890,10 +1936,14 @@ function updateSyncStatusLabel() {
     text = '● paused (hold Alt)';
     color = '#ee7100';
   }
-  enSyncStatus.textContent = text;
-  frSyncStatus.textContent = text;
-  enSyncStatus.style.color = color;
-  frSyncStatus.style.color = color;
+  if (enSyncStatus) {
+    enSyncStatus.textContent = text;
+    enSyncStatus.style.color = color;
+  }
+  if (frSyncStatus) {
+    frSyncStatus.textContent = text;
+    frSyncStatus.style.color = color;
+  }
 }
 
 // Bottom Stats HUD and Inspector Drawer
@@ -2142,8 +2192,66 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
-// Generate Output Step 3
-function handleGenerateOutput() {
+// Pretty print HTML with clean indentation
+function formatHtmlCode(html) {
+  if (!html) return '';
+  let formatted = '';
+  let indent = 0;
+  const tab = '  ';
+
+  // Normalize self-closing and clean tags
+  const tokens = html
+    .replace(/>\s*</g, '><')
+    .replace(/</g, '\n<')
+    .split('\n')
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  const voidTags = new Set([
+    'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input',
+    'link', 'meta', 'param', 'source', 'track', 'wbr', '!doctype'
+  ]);
+
+  tokens.forEach((line) => {
+    // Closing tag
+    if (line.match(/^<\/[\w-]+>/i)) {
+      if (indent > 0) indent--;
+      formatted += tab.repeat(indent) + line + '\n';
+    }
+    // Comment or DOCTYPE
+    else if (line.match(/^<!/i) || line.match(/^<!--/)) {
+      formatted += tab.repeat(indent) + line + '\n';
+    }
+    // Self closing XML/HTML or void tag
+    else if (line.match(/^<[\w-]+.*?\/>/)) {
+      formatted += tab.repeat(indent) + line + '\n';
+    }
+    // Single line complete tag (e.g. <h2>Title</h2>, <li>Item</li>, <p>Text</p>)
+    else if (line.match(/^<([\w-]+)(?:\s+[^>]*)?>.*<\/\1>$/i)) {
+      formatted += tab.repeat(indent) + line + '\n';
+    }
+    // Opening tag
+    else if (line.match(/^<([\w-]+)(?:\s+[^>]*)?>/i)) {
+      const match = line.match(/^<([\w-]+)/i);
+      const tag = match ? match[1].toLowerCase() : '';
+      if (voidTags.has(tag)) {
+        formatted += tab.repeat(indent) + line + '\n';
+      } else {
+        formatted += tab.repeat(indent) + line + '\n';
+        indent++;
+      }
+    }
+    // Content / text node
+    else {
+      formatted += tab.repeat(indent) + line + '\n';
+    }
+  });
+
+  return formatted.trim();
+}
+
+// Generate localized French HTML from current state and active frame edits
+function generateFrenchHtmlSource() {
   const parser = new DOMParser();
   let doc;
   const hasHtmlTag = /<html[\s>]/i.test(state.enHtml);
@@ -2152,7 +2260,7 @@ function handleGenerateOutput() {
     doc = parser.parseFromString(state.enHtml, 'text/html');
   } else {
     doc = parser.parseFromString('<html><head></head><body></body></html>', 'text/html');
-    doc.body.innerHTML = state.enHtml;
+    doc.body.innerHTML = state.enHtml || '';
   }
 
   // Update lang attribute to fr
@@ -2161,6 +2269,19 @@ function handleGenerateOutput() {
   }
 
   const enDocBlocks = extractBlocks(doc.body);
+
+  // Synchronize any live edits made in the French visual preview frame into state.frBlocks
+  try {
+    if (frPreviewFrame && frPreviewFrame.contentDocument) {
+      const editables = frPreviewFrame.contentDocument.querySelectorAll('.gc-swap-editable');
+      editables.forEach((el) => {
+        const frIdx = el.hasAttribute('data-fr-index') ? parseInt(el.getAttribute('data-fr-index'), 10) : null;
+        if (frIdx !== null && state.frBlocks[frIdx]) {
+          state.frBlocks[frIdx].text = el.innerText.trim();
+        }
+      });
+    }
+  } catch (_) {}
 
   state.alignPairs.forEach((pair) => {
     if (pair.enIndex !== null && pair.frIndex !== null && !pair.skip) {
@@ -2177,127 +2298,41 @@ function handleGenerateOutput() {
     }
   });
 
-  const finalHtml = hasHtmlTag ? doc.documentElement.outerHTML : doc.body.innerHTML;
-  state.outputHtml = finalHtml;
+  const rawHtml = hasHtmlTag ? doc.documentElement.outerHTML : doc.body.innerHTML;
+  return formatHtmlCode(rawHtml);
+}
 
-  // Render Canada.ca theme preview
-  const wetThemeHtml = `<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Prévisualisation Thème Canada.ca (WET-BOEW)</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&display=swap">
-  <link rel="stylesheet" href="https://wet-boew.github.io/themes-dist/GCWeb/GCWeb/css/theme.min.css">
-  <style>
-    body { padding: 24px; font-family: "Noto Sans", sans-serif; }
-    
-    .alert, section.alert, div.alert, aside.alert {
-      position: relative !important;
-      margin-top: 1.5em !important;
-      margin-bottom: 1.5em !important;
-      padding: 10px 0 8px 30px !important;
-      border: none !important;
-      border-left: 6px solid #269abc !important;
-      border-radius: 0 !important;
-      box-sizing: border-box !important;
-      display: block !important;
-      background: transparent !important;
-      background-color: transparent !important;
-      color: #333333 !important;
-    }
-    .alert::before {
-      content: "" !important;
-      position: absolute !important;
-      left: -16px !important;
-      top: 8px !important;
-      width: 26px !important;
-      height: 26px !important;
-      border-radius: 50% !important;
-      background-position: center !important;
-      background-repeat: no-repeat !important;
-      background-size: contain !important;
-      box-shadow: 0 0 0 3.5px #ffffff !important;
-      z-index: 2 !important;
-    }
-    .alert h1, .alert h2, .alert h3, .alert h4, .alert h5, .alert h6,
-    .alert > h1, .alert > h2, .alert > h3, .alert > h4, .alert > h5, .alert > h6 {
-      margin-top: 0 !important;
-      margin-bottom: 8px !important;
-      font-size: 1.35em !important;
-      font-weight: 700 !important;
-      line-height: 1.3 !important;
-      color: #000000 !important;
-    }
-    .alert p, .alert > p {
-      margin-top: 0 !important;
-      margin-bottom: 10px !important;
-      line-height: 1.5 !important;
-      color: #333333 !important;
-    }
-    .alert ul, .alert ol {
-      margin-top: 6px !important;
-      margin-bottom: 10px !important;
-      padding-left: 20px !important;
-      color: #333333 !important;
-    }
-    .alert > :last-child, .alert p:last-child, .alert ul:last-child, .alert ol:last-child {
-      margin-bottom: 0 !important;
-    }
-    .alert a, .alert .alert-link {
-      text-decoration: underline !important;
-      font-weight: 600 !important;
-      color: #284162 !important;
-    }
+function updateFrCodeStats() {
+  if (!frCodeEditor || !frCodeStats) return;
+  const text = frCodeEditor.value || '';
+  const lines = text ? text.split('\n').length : 0;
+  const chars = text.length;
+  frCodeStats.textContent = `${lines} ${lines === 1 ? 'line' : 'lines'} • ${chars} chars`;
+}
 
-    /* Info Alert (Default contextual alert on Canada.ca) */
-    .alert-info, section.alert-info, div.alert-info, aside.alert-info,
-    .alert:not(.alert-warning):not(.alert-danger):not(.alert-success) {
-      border-left-color: #269abc !important;
-    }
-    .alert-info::before, section.alert-info::before, div.alert-info::before, aside.alert-info::before,
-    .alert:not(.alert-warning):not(.alert-danger):not(.alert-success)::before {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%23269abc'/%3E%3Ccircle cx='12' cy='7' r='1.6' fill='%23ffffff'/%3E%3Crect x='10.4' y='10.5' width='3.2' height='7.5' rx='1' fill='%23ffffff'/%3E%3C/svg%3E") !important;
-    }
+function switchFrenchView(mode) {
+  state.frViewMode = mode;
+  const isCode = mode === 'code';
 
-    /* Warning Alert */
-    .alert-warning, section.alert-warning, div.alert-warning, aside.alert-warning {
-      border-left-color: #ee7100 !important;
-    }
-    .alert-warning::before, section.alert-warning::before, div.alert-warning::before, aside.alert-warning::before {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%23ee7100'/%3E%3Crect x='10.4' y='5.5' width='3.2' height='8.5' rx='1' fill='%23ffffff'/%3E%3Ccircle cx='12' cy='17.5' r='1.6' fill='%23ffffff'/%3E%3C/svg%3E") !important;
-    }
+  if (frViewVisualBtn) frViewVisualBtn.classList.toggle('is-active', !isCode);
+  if (frViewCodeBtn) frViewCodeBtn.classList.toggle('is-active', isCode);
 
-    /* Danger Alert */
-    .alert-danger, section.alert-danger, div.alert-danger, aside.alert-danger {
-      border-left-color: #d3080c !important;
-    }
-    .alert-danger::before, section.alert-danger::before, div.alert-danger::before, aside.alert-danger::before {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%23d3080c'/%3E%3Crect x='10.4' y='5.5' width='3.2' height='8.5' rx='1' fill='%23ffffff'/%3E%3Ccircle cx='12' cy='17.5' r='1.6' fill='%23ffffff'/%3E%3C/svg%3E") !important;
-    }
+  if (frPaneTitle) {
+    frPaneTitle.textContent = isCode ? 'French (HTML Code View)' : 'French (aligned & editable)';
+  }
 
-    /* Success Alert */
-    .alert-success, section.alert-success, div.alert-success, aside.alert-success {
-      border-left-color: #278400 !important;
+  if (isCode) {
+    const htmlCode = generateFrenchHtmlSource();
+    if (frCodeEditor) {
+      frCodeEditor.value = htmlCode;
+      updateFrCodeStats();
     }
-    .alert-success::before, section.alert-success::before, div.alert-success::before, aside.alert-success::before {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%23278400'/%3E%3Cpolyline points='6.5 12 10.5 16 17.5 8.5' fill='none' stroke='%23ffffff' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
-    }
-  </style>
-</head>
-<body class="container">
-  <main role="main" property="mainContentOfPage" class="container">
-    ${finalHtml}
-  </main>
-</body>
-</html>`;
-
-  previewFrame.srcdoc = wetThemeHtml;
-  codeOut.value = finalHtml;
-
-  outputSection.classList.add('show');
-  outputSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  showToast('French HTML generated successfully');
+    if (frPreviewFrame) frPreviewFrame.style.display = 'none';
+    if (frCodeWrap) frCodeWrap.style.display = 'flex';
+  } else {
+    if (frCodeWrap) frCodeWrap.style.display = 'none';
+    if (frPreviewFrame) frPreviewFrame.style.display = 'block';
+  }
 }
 
 // Keyboard Navigation & Shortcuts
@@ -2392,8 +2427,16 @@ function initEventListeners() {
     if (file) handleDocxFile(file);
   });
 
-  // Align Button
+  // Align & Source Condense Controls
   alignBtn.addEventListener('click', computeAlignment);
+
+  if (expandSourcesBtn) {
+    expandSourcesBtn.addEventListener('click', expandSources);
+  }
+
+  if (collapseSourcesBtn) {
+    collapseSourcesBtn.addEventListener('click', condenseSources);
+  }
 
   // View Toolbar
   toggleFocusMode.addEventListener('click', () => {
@@ -2438,8 +2481,79 @@ function initEventListeners() {
     showToast('Sync offset reset');
   });
 
-  exportFromViewBtn.addEventListener('click', handleGenerateOutput);
-  generateBtn.addEventListener('click', handleGenerateOutput);
+  // French Pane View Toggle (Visual vs Code)
+  if (frViewVisualBtn) {
+    frViewVisualBtn.addEventListener('click', () => {
+      switchFrenchView('visual');
+    });
+  }
+
+  if (frViewCodeBtn) {
+    frViewCodeBtn.addEventListener('click', () => {
+      switchFrenchView('code');
+    });
+  }
+
+  if (copyFrCodeBtn) {
+    copyFrCodeBtn.addEventListener('click', async () => {
+      if (!frCodeEditor || !frCodeEditor.value) return;
+      try {
+        await navigator.clipboard.writeText(frCodeEditor.value);
+        showToast('French HTML code copied to clipboard');
+      } catch (_) {
+        frCodeEditor.select();
+        document.execCommand('copy');
+        showToast('French HTML code copied to clipboard');
+      }
+    });
+  }
+
+  if (formatFrCodeBtn) {
+    formatFrCodeBtn.addEventListener('click', () => {
+      if (!frCodeEditor) return;
+      frCodeEditor.value = formatHtmlCode(frCodeEditor.value);
+      updateFrCodeStats();
+      showToast('HTML code formatted');
+    });
+  }
+
+  if (frCodeEditor) {
+    frCodeEditor.addEventListener('input', () => {
+      updateFrCodeStats();
+    });
+
+    // Support tab indent in code editor
+    frCodeEditor.addEventListener('keydown', (e) => {
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        const start = frCodeEditor.selectionStart;
+        const end = frCodeEditor.selectionEnd;
+        frCodeEditor.value = frCodeEditor.value.substring(0, start) + '  ' + frCodeEditor.value.substring(end);
+        frCodeEditor.selectionStart = frCodeEditor.selectionEnd = start + 2;
+        updateFrCodeStats();
+      }
+    });
+  }
+
+  if (downloadFrCodeBtn) {
+    downloadFrCodeBtn.addEventListener('click', () => {
+      const code = frCodeEditor && frCodeEditor.value ? frCodeEditor.value : generateFrenchHtmlSource();
+      if (!code) {
+        showToast('No French HTML to download');
+        return;
+      }
+      const blob = new Blob([code], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = (state.frDocxName.replace(/\.docx$/i, '') || 'french-localized') + '.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('Downloaded French HTML');
+    });
+  }
 
   // Segmented Bar Tabs (EN Tags, FR Tags, Mismatches, Missing, Extra, Skipped)
   document.querySelectorAll('.preview-segment-tab').forEach((tab) => {
@@ -2509,51 +2623,6 @@ function initEventListeners() {
       state.syncPaused = false;
       updateSyncStatusLabel();
     }
-  });
-
-  // Output Section Tabs
-  tabPreview.addEventListener('click', () => {
-    state.outputTab = 'preview';
-    tabPreview.classList.add('active');
-    tabCode.classList.remove('active');
-    previewFrame.style.display = 'block';
-    codeOut.style.display = 'none';
-  });
-
-  tabCode.addEventListener('click', () => {
-    state.outputTab = 'code';
-    tabCode.classList.add('active');
-    tabPreview.classList.remove('active');
-    previewFrame.style.display = 'none';
-    codeOut.style.display = 'block';
-  });
-
-  // Copy Code
-  copyCodeBtn.addEventListener('click', async () => {
-    if (!state.outputHtml) return;
-    try {
-      await navigator.clipboard.writeText(state.outputHtml);
-      showToast('HTML copied to clipboard');
-    } catch (err) {
-      codeOut.select();
-      document.execCommand('copy');
-      showToast('HTML copied to clipboard');
-    }
-  });
-
-  // Download Code
-  downloadHtmlBtn.addEventListener('click', () => {
-    if (!state.outputHtml) return;
-    const blob = new Blob([state.outputHtml], { type: 'text/html;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = (state.frDocxName.replace(/\.docx$/i, '') || 'translated') + '.html';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    showToast('Download started');
   });
 }
 
