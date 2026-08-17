@@ -1063,7 +1063,7 @@ summary:hover {
 }
 
 .gc-swap-active {
-  outline: 1px solid #8b5cf6 !important;
+  outline: 2px solid #8b5cf6 !important;
   outline-offset: 3px;
   background: transparent !important;
 }
@@ -1513,13 +1513,11 @@ function buildFrenchFrameSource(rawEnHtml, enBlocks, frBlocks, alignPairs) {
   }
 
   const domBlocks = extractBlocks(doc.body);
-  const usedFrIndices = new Set();
 
   domBlocks.forEach((enBlock, enIdx) => {
     const pair = alignPairs ? alignPairs.find((p) => p.enIndex === enIdx && !p.skip) : null;
     if (pair && pair.frIndex !== null && frBlocks[pair.frIndex]) {
       const frBlock = frBlocks[pair.frIndex];
-      usedFrIndices.add(pair.frIndex);
       replaceBlockTextPreservingLinks(enBlock.el, frBlock.text, enBlock.attrTarget, frBlock.spans);
       enBlock.el.setAttribute('data-swap-index', String(enIdx));
       enBlock.el.setAttribute('data-fr-index', String(pair.frIndex));
@@ -1534,33 +1532,7 @@ function buildFrenchFrameSource(rawEnHtml, enBlocks, frBlocks, alignPairs) {
     }
   });
 
-  // Render extra French blocks if any weren't matched
-  const extraFrBlocks = [];
-  frBlocks.forEach((frBlock, frIdx) => {
-    if (!usedFrIndices.has(frIdx)) {
-      extraFrBlocks.push({ frBlock, frIdx });
-    }
-  });
-
-  if (extraFrBlocks.length > 0) {
-    const extraWrap = doc.createElement('section');
-    extraWrap.className = 'alert alert-warning';
-    extraWrap.style.marginTop = '28px';
-    const extraH = doc.createElement('h3');
-    extraH.textContent = 'Contenu français supplémentaire';
-    extraWrap.appendChild(extraH);
-
-    extraFrBlocks.forEach(({ frBlock, frIdx }) => {
-      const el = doc.createElement(frBlock.tag || 'p');
-      el.textContent = frBlock.text;
-      el.setAttribute('data-swap-index', `extra-${frIdx}`);
-      el.setAttribute('data-fr-index', String(frIdx));
-      el.setAttribute('contenteditable', 'true');
-      el.classList.add('gc-swap-editable');
-      extraWrap.appendChild(el);
-    });
-    doc.body.appendChild(extraWrap);
-  }
+  // NOTE: Extra French block warning section removed here to rely entirely on the Issues Panel.
 
   const isLight = state.theme === 'light';
   const bodyClass = isLight ? 'gc-light-mode' : '';
@@ -1601,7 +1573,11 @@ function buildFrenchFrameSource(rawEnHtml, enBlocks, frBlocks, alignPairs) {
 </html>`;
 }
 
-let isProgrammaticScroll = false;
+// Tracks which scroll containers are currently being driven by our own
+// code (as opposed to real user input). Keyed per-element rather than a
+// single global flag, so a write to one frame never blocks processing
+// of genuine scroll events on the other frame.
+const programmaticScrollEls = new Set();
 
 function getSyncItems(frame) {
   try {
@@ -1659,22 +1635,22 @@ function findTopIndexForFrame(frame) {
     if (!items.length) return null;
 
     const maxScroll = Math.max(0, scrollEl.scrollHeight - scrollEl.clientHeight);
-    if (scrollEl.scrollTop <= 30) return items[0].index;
-    if (maxScroll > 0 && scrollEl.scrollTop >= maxScroll - 30) return items[items.length - 1].index;
+    // Force top/bottom element only at the true edges of scroll
+    if (scrollEl.scrollTop <= 4) return items[0].index;
+    if (maxScroll > 0 && scrollEl.scrollTop >= maxScroll - 4) return items[items.length - 1].index;
 
-    const viewportCenter = scrollEl.scrollTop + scrollEl.clientHeight / 2;
+    // Walk down the sorted items and keep the last one whose top has
+    // already crossed the reading line. This is monotonic with scrollTop,
+    // so short blocks (e.g. a lone heading) can never be stepped over.
+    // The line sits at the vertical center of the viewport so the active
+    // block stays the one visually in the middle of the screen.
+    const topThreshold = scrollEl.scrollTop + scrollEl.clientHeight / 2;
     let candidate = items[0];
-    let minDistance = Infinity;
-
     for (const item of items) {
-      if (viewportCenter >= item.top && viewportCenter <= item.top + item.height) {
-        return item.index;
-      }
-      const itemCenter = item.top + item.height / 2;
-      const dist = Math.abs(itemCenter - viewportCenter);
-      if (dist < minDistance) {
-        minDistance = dist;
+      if (item.top <= topThreshold) {
         candidate = item;
+      } else {
+        break;
       }
     }
     return candidate.index;
@@ -1688,6 +1664,7 @@ function scrollFrameToIndex(frame, index) {
     const doc = frame.contentDocument || frame.contentWindow.document;
     if (!doc) return;
     const scrollEl = doc.scrollingElement || doc.documentElement;
+    cancelSmoothFollowScroll(scrollEl); // don't fight an in-flight follow-scroll ease
     const items = getSyncItems(frame);
     if (!items.length) return;
     let target = items.find((it) => it.index === index);
@@ -1713,20 +1690,25 @@ function scrollFrameToIndex(frame, index) {
 function alignPreviewBlocks(index) {
   if (!enPreviewFrame || !frPreviewFrame) return;
 
+  let enScroll = null;
+  let frScroll = null;
   try {
     const enDoc = enPreviewFrame.contentDocument || enPreviewFrame.contentWindow.document;
     const frDoc = frPreviewFrame.contentDocument || frPreviewFrame.contentWindow.document;
     if (!enDoc || !frDoc) return;
 
-    const enScroll = enDoc.scrollingElement || enDoc.documentElement;
-    const frScroll = frDoc.scrollingElement || frDoc.documentElement;
+    enScroll = enDoc.scrollingElement || enDoc.documentElement;
+    frScroll = frDoc.scrollingElement || frDoc.documentElement;
 
     const enEl = enDoc.querySelector(`[data-swap-index="${index}"]`);
     const frEl = frDoc.querySelector(`[data-swap-index="${index}"]`);
 
     if (!enEl && !frEl) return;
 
-    isProgrammaticScroll = true;
+    cancelSmoothFollowScroll(enScroll); // don't fight an in-flight follow-scroll ease
+    cancelSmoothFollowScroll(frScroll);
+    programmaticScrollEls.add(enScroll);
+    programmaticScrollEls.add(frScroll);
 
     if (enEl) {
       if (index === 0) {
@@ -1757,10 +1739,12 @@ function alignPreviewBlocks(index) {
     }
 
     setTimeout(() => {
-      isProgrammaticScroll = false;
+      programmaticScrollEls.delete(enScroll);
+      programmaticScrollEls.delete(frScroll);
     }, 80);
   } catch (_) {
-    isProgrammaticScroll = false;
+    if (enScroll) programmaticScrollEls.delete(enScroll);
+    if (frScroll) programmaticScrollEls.delete(frScroll);
   }
 }
 
@@ -1784,36 +1768,87 @@ function updateActiveBlockHud(enIdx) {
   activeBlockHudTag.textContent = tag;
 }
 
-function syncScroll(sourceFrame, targetFrame) {
-  if (isProgrammaticScroll) return;
+// Eases a scroll container toward a moving destination instead of
+// snapping straight to it on every scroll event. Each call just updates
+// the destination; the rAF loop (re)started here keeps chasing it, so
+// bursts of scroll events during a wheel/trackpad gesture produce one
+// continuous smooth motion on the target frame rather than a jump per
+// event. The target's own scrollEl is marked in programmaticScrollEls
+// for the whole ease so *its* scroll listener doesn't treat this as user
+// input and fight back (which would otherwise cause a feedback loop) —
+// this is scoped to that one element so it never blocks scroll handling
+// on the other (source) frame.
+const scrollAnimState = new WeakMap();
 
+function cancelSmoothFollowScroll(scrollEl) {
+  const anim = scrollAnimState.get(scrollEl);
+  if (anim && anim.raf) {
+    cancelAnimationFrame(anim.raf);
+    anim.raf = null;
+  }
+  programmaticScrollEls.delete(scrollEl);
+}
+
+function smoothFollowScroll(scrollEl, destination) {
+  let anim = scrollAnimState.get(scrollEl);
+  if (!anim) {
+    anim = { raf: null, dest: destination };
+    scrollAnimState.set(scrollEl, anim);
+  } else {
+    anim.dest = destination;
+  }
+  programmaticScrollEls.add(scrollEl);
+  if (anim.raf) return; // loop already running; it'll pick up the new dest next frame
+
+  const step = () => {
+    const cur = scrollEl.scrollTop;
+    const diff = anim.dest - cur;
+    if (Math.abs(diff) < 0.5) {
+      scrollEl.scrollTop = anim.dest;
+      anim.raf = null;
+      // Let one more frame pass so the programmatic scroll event this
+      // final write triggers gets swallowed before we release the flag.
+      requestAnimationFrame(() => {
+        programmaticScrollEls.delete(scrollEl);
+      });
+      return;
+    }
+    scrollEl.scrollTop = cur + diff * 0.25;
+    anim.raf = requestAnimationFrame(step);
+  };
+  anim.raf = requestAnimationFrame(step);
+}
+
+function syncScroll(sourceFrame, targetFrame) {
   try {
     const srcDoc = sourceFrame.contentDocument || sourceFrame.contentWindow.document;
     if (!srcDoc) return;
     const srcScroll = srcDoc.scrollingElement || srcDoc.documentElement;
+    if (programmaticScrollEls.has(srcScroll)) return; // this event was caused by our own code, not the user
     const srcItems = getSyncItems(sourceFrame);
     if (!srcItems.length) return;
 
     const maxScroll = Math.max(0, srcScroll.scrollHeight - srcScroll.clientHeight);
     const viewportCenter = srcScroll.scrollTop + srcScroll.clientHeight / 2;
 
+    // Pick the active block by which one has crossed a reading line at
+    // the vertical center of the viewport. This is monotonic in
+    // scrollTop, so a short block (e.g. a lone heading between a
+    // paragraph and a list) can never be jumped over between two scroll
+    // events the way a nearest-center comparison can, and it keeps the
+    // highlighted block centered on screen rather than pinned near the top.
     let candidate = srcItems[0];
-    if (srcScroll.scrollTop <= 30) {
+    if (srcScroll.scrollTop <= 4) {
       candidate = srcItems[0];
-    } else if (maxScroll > 0 && srcScroll.scrollTop >= maxScroll - 30) {
+    } else if (maxScroll > 0 && srcScroll.scrollTop >= maxScroll - 4) {
       candidate = srcItems[srcItems.length - 1];
     } else {
-      let minDistance = Infinity;
+      const topThreshold = viewportCenter;
       for (const item of srcItems) {
-        if (viewportCenter >= item.top && viewportCenter <= item.top + item.height) {
+        if (item.top <= topThreshold) {
           candidate = item;
+        } else {
           break;
-        }
-        const itemCenter = item.top + item.height / 2;
-        const dist = Math.abs(itemCenter - viewportCenter);
-        if (dist < minDistance) {
-          minDistance = dist;
-          candidate = item;
         }
       }
     }
@@ -1847,52 +1882,75 @@ function syncScroll(sourceFrame, targetFrame) {
           Math.abs(it.index - targetIndex) < Math.abs(best.index - targetIndex) ? it : best, targetItems[0]);
       }
 
-      isProgrammaticScroll = true;
       const targetMax = Math.max(0, targetScroll.scrollHeight - targetScroll.clientHeight);
 
+      let destination;
       if (srcScroll.scrollTop <= 30 && state.syncOffset === 0) {
-        targetScroll.scrollTop = 0;
+        destination = 0;
       } else if (maxScroll > 0 && srcScroll.scrollTop >= maxScroll - 30 && state.syncOffset === 0) {
-        targetScroll.scrollTop = targetMax;
+        destination = targetMax;
       } else {
-        const destination = targetItem.top + pixelOffset - targetScroll.clientHeight / 2;
-        targetScroll.scrollTop = Math.max(0, Math.min(destination, targetMax));
+        destination = Math.max(0, Math.min(targetItem.top + pixelOffset - targetScroll.clientHeight / 2, targetMax));
       }
 
-      setTimeout(() => {
-        isProgrammaticScroll = false;
-      }, 80);
+      smoothFollowScroll(targetScroll, destination);
     }
-  } catch (_) {
-    isProgrammaticScroll = false;
-  }
+  } catch (_) {}
 }
 
 function setupIframeEventListeners() {
-  const attachScroll = (frame, targetFrame) => {
-    frame.addEventListener('load', () => {
+  const attachListeners = (frame, targetFrame) => {
+    // 1. Remove any previous load listener so they don't accumulate
+    if (frame._symmetraLoadHandler) {
+      frame.removeEventListener('load', frame._symmetraLoadHandler);
+    }
+
+    frame._symmetraLoadHandler = () => {
       updateIframesTheme();
       try {
         const win = frame.contentWindow;
         if (!win) return;
+
+        // Scroll sync
         if (win._symmetraScrollHandler) {
           win.removeEventListener('scroll', win._symmetraScrollHandler);
         }
         win._symmetraScrollHandler = () => syncScroll(frame, targetFrame);
         win.addEventListener('scroll', win._symmetraScrollHandler, { passive: true });
 
-        // Attach keydown for keyboard navigation from inside frame
-        win.addEventListener('keydown', (e) => {
-          handleKeyNavigation(e);
-        });
+        // Keyboard navigation — store reference so old handler is removed
+        if (win._symmetraKeyHandler) {
+          win.removeEventListener('keydown', win._symmetraKeyHandler);
+        }
+        win._symmetraKeyHandler = (e) => handleKeyNavigation(e);
+        win.addEventListener('keydown', win._symmetraKeyHandler);
+
+        // Focus sync — keep activePreviewBlock in sync when Tabbing inside iframe
+        if (win._symmetraFocusHandler) {
+          win.removeEventListener('focusin', win._symmetraFocusHandler);
+        }
+        win._symmetraFocusHandler = (e) => {
+          const target = e.target.closest('[data-swap-index]');
+          if (!target) return;
+          const idx = parseInt(target.getAttribute('data-swap-index'), 10);
+          if (!isNaN(idx) && idx >= 0 && idx < state.enBlocks.length) {
+            state.activePreviewBlock = idx;
+            state.lastKnownEnIndex = idx;
+            applyActiveHighlight();
+            updateActiveBlockHud(idx);
+          }
+        };
+        win.addEventListener('focusin', win._symmetraFocusHandler);
       } catch (e) {
         console.warn('Iframe attach error', e);
       }
-    });
+    };
+
+    frame.addEventListener('load', frame._symmetraLoadHandler);
   };
 
-  attachScroll(enPreviewFrame, frPreviewFrame);
-  attachScroll(frPreviewFrame, enPreviewFrame);
+  attachListeners(enPreviewFrame, frPreviewFrame);
+  attachListeners(frPreviewFrame, enPreviewFrame);
 }
 
 // Global PostMessage receiver for iframe clicks and edits
