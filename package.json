@@ -1,0 +1,74 @@
+{
+  "name": "symmetra",
+  "private": true,
+  "version": "1.0.5",
+  "description": "Symmetra Desktop App",
+  "author": "Angelo Destro",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/graphxdesigns2/Symmetra.git"
+  },
+  "type": "module",
+  "main": "main.js",
+  "scripts": {
+    "dev": "vite --port=3000 --host=0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview",
+    "clean": "rm -rf dist server.js",
+    "lint": "tsc --noEmit",
+    "electron:dev": "electron . --dev",
+    "dist": "npm run build && cross-env NODE_TLS_REJECT_UNAUTHORIZED=0 electron-builder",
+    "postinstall": "patch-package"
+  },
+  "build": {
+    "appId": "com.symmetra.app",
+    "productName": "Symmetra",
+    "files": [
+      "dist/**/*",
+      "main.js",
+      "package.json"
+    ],
+    "directories": {
+      "output": "release"
+    },
+    "win": {
+      "icon": "build/icon.ico",
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "graphxdesigns2",
+        "repo": "Symmetra"
+      }
+    ],
+    "extraResources": [
+      {
+        "from": "build/icon.ico",
+        "to": "icon.ico"
+      }
+    ]
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.14",
+    "electron-updater": "^6.8.9",
+    "mammoth": "^1.12.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "cross-env": "^10.1.0",
+    "electron": "^44.4.3",
+    "electron-builder": "^26.15.3",
+    "patch-package": "^8.0.1",
+    "tailwindcss": "^4.1.14",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.3"
+  }
+}

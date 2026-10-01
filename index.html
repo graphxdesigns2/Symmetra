@@ -1,0 +1,1268 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Symmetra — Document Structure & Localization</title>
+    <meta name="description" content="Symmetra: Web document structure alignment and French content localization" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&family=Noto+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/global.css">
+  </head>
+  <body>
+    <!-- Custom Electron title bar (only shown when running in Electron; hidden in browser) -->
+    <div id="title-bar">
+      <div id="title-bar-controls">
+        <button type="button" id="btn-minimize" aria-label="Minimize" title="Minimize">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg>
+        </button>
+        <button type="button" id="btn-maximize" aria-label="Maximize or restore" title="Maximize or restore">
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+        </button>
+        <button type="button" id="btn-close" aria-label="Close" title="Close">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="min-h-screen flex flex-col">
+      <a href="#main-content" class="skip-link">Skip to main content</a>      <!-- Application Header -->
+      <header class="app-header" id="appHeader">
+        <div class="app-header-inner">
+          <!-- Left-justified Brand Logo -->
+          <div class="symmetra-brand">
+            <img src="assets/symmetra-logo-light.png" alt="Symmetra" class="symmetra-logo logo-light">
+            <img src="assets/symmetra-logo-dark.png" alt="Symmetra" class="symmetra-logo logo-dark">
+            <span class="version-pill" title="Symmetra version 1.0.5">1.0.5</span>
+          </div>
+
+          <!-- Centered Collapsed Sources Pill in Nav Bar (Shown when sources are condensed) -->
+          <div id="navSourcesCondensed" class="nav-sources-condensed" aria-label="Loaded source documents summary">
+            <div class="nav-sources-pill">
+              <div class="nav-sources-item" title="Source English HTML">
+                <span class="tag tag-en">EN</span>
+                <span class="nav-sources-badge" id="condensedEnStat">0 blocks</span>
+              </div>
+
+              <span class="nav-sources-sep" aria-hidden="true"></span>
+
+              <div class="nav-sources-item" title="French Word Document">
+                <span class="tag tag-fr">FR</span>
+                <span class="nav-sources-badge" id="condensedFrStat">0 blocks</span>
+              </div>
+
+              <button
+                type="button"
+                id="expandSourcesBtn"
+                class="nav-sources-edit-btn"
+                title="Expand and edit source HTML or upload a different Word document"
+                aria-label="Edit source documents"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                <span>Edit Sources</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Right-justified Controls -->
+          <div class="app-header-right">
+            <!-- Tutorial guide (opens the Controls & Help walkthrough) -->
+            <button
+              type="button"
+              id="tutorialBtn"
+              class="btn-new-workflow"
+              title="Open the tutorial guide"
+              aria-label="Open tutorial"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+              <span>Tutorial</span>
+            </button>
+            <!-- Start new workflow button -->
+            <button
+              type="button"
+              id="startNewWorkflowBtn"
+              class="btn-new-workflow"
+              title="Start a new workflow (clears inputs &amp; resets tool)"
+              aria-label="Start new workflow"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+              <span>Start new workflow</span>
+            </button>
+
+            <button type="button" id="openControlsModalBtn" class="view-control-button view-control-button-controls" title="View navigation controls, shortcuts, and tips (?)">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5 inline mr-1"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+              <span>Controls &amp; Help</span>
+            </button>
+
+            <!-- Sliding Track Switch for Theme Toggle -->
+            <button
+              class="theme-switch is-light"
+              id="themeToggle"
+              type="button"
+              role="switch"
+              aria-checked="false"
+              aria-label="Switch to dark mode"
+              title="Switch to dark mode"
+            >
+              <span class="theme-switch-track">
+                <!-- Left track icon: Sun -->
+                <span class="theme-switch-icon icon-sun" aria-hidden="true">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                </span>
+                
+                <!-- Right track icon: Moon -->
+                <span class="theme-switch-icon icon-moon" aria-hidden="true">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M12 3a6 6 0 0 0 9 9 9 0 1 1-9-9Z"/></svg>
+                </span>
+
+                <!-- Sliding Thumb Handle -->
+                <span class="theme-switch-thumb" aria-hidden="true">
+                  <svg id="themeThumbIcon" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3 h-3 text-amber-500"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                </span>
+              </span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main id="main-content" class="wrap flex-1">
+        <!-- Step 1 & 2 Inputs (Collapsible after Align) -->
+        <section id="sourceUploadSection" class="source-upload-section">
+          <!-- Full Expanded Input Panels -->
+          <div id="sourceExpandedWrap" class="source-expanded-wrap">
+            <div class="grid2">
+              <!-- English HTML Panel -->
+              <section class="panel" id="sourceHtmlPanel">
+                <div class="flex items-center justify-between mb-2">
+                  <h2>
+                    <span class="tag tag-en">EN</span>
+                    Source HTML
+                  </h2>
+                  <button
+                    type="button"
+                    id="loadSampleEnBtn"
+                    class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 cursor-pointer bg-transparent border-0"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M10 12.5 8 15l2 2.5"/><path d="m14 12.5 2 2.5-2 2.5"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"/></svg>
+                    Load sample template
+                  </button>
+                </div>
+
+                <div class="html-input-code-wrap" id="htmlInputWrap">
+                  <div class="html-input-gutter" id="htmlInputGutter" aria-hidden="true">1</div>
+                  <div class="html-input-stage" id="htmlInputStage">
+                    <pre class="html-input-highlight" id="htmlInputHighlight" aria-hidden="true"><code id="htmlInputHighlightInner"></code></pre>
+                    <textarea
+                      id="htmlInput"
+                      class="symmetra-textarea html-input-textarea min-h-[220px]"
+                      placeholder="<h1>Page title here</h1>&#10;<section class=&quot;alert alert-info&quot;>&#10;  <p>Important information goes here.</p>&#10;</section>&#10;<h2>On this page:</h2>&#10;<ul>&#10;  <li>List item one</li>&#10;  <li>List item two</li>&#10;  <li>List item three</li>&#10;</ul>"
+                      spellcheck="false"
+                      wrap="soft"
+                    ></textarea>
+                  </div>
+                  <div class="html-input-corner">
+                    <div class="statline" id="htmlStat">0 blocks</div>
+                    <button
+                      class="btn btn-secondary"
+                      id="clearHtmlBtn"
+                      type="button"
+                      disabled
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                      Clear
+                    </button>
+                  </div>
+                </div>
+              </section>
+
+              <div class="source-side-stack">
+                <!-- French Word Document Upload Panel -->
+                <section class="panel" id="docxPanel">
+                  <div class="flex items-center justify-between mb-2">
+                  <h2>
+                    <span class="tag tag-fr">FR</span>
+                    Word Document
+                  </h2>
+                  <button
+                    type="button"
+                    id="loadSampleFrBtn"
+                    class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 cursor-pointer bg-transparent border-0"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+                    Load sample French text
+                  </button>
+                </div>
+
+                <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Upload Word document (.docx). Press Enter to browse or drop a file here.">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ico"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+                  <div class="main" id="dropzoneMain">Drop .docx here or click to browse</div>
+                  <div class="sub">Parsed entirely in your browser — nothing leaves this page</div>
+                  <input type="file" id="docxFile" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" aria-label="Choose a .docx Word document" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(1px, 1px, 1px, 1px); clip-path: inset(50%); white-space: nowrap;" />
+                  <div id="docxStatWrap"></div>
+                  <div class="dropzone-corner">
+                    <div class="statline" id="docxStat">0 blocks</div>
+                    <button
+                      class="btn btn-secondary"
+                      id="clearDocxBtn"
+                      type="button"
+                      disabled
+                      title="Clear uploaded document"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                      Clear
+                    </button>
+                  </div>
+                </div>
+              </section>
+
+              <section class="panel" id="alignReadyPanel">
+                <button
+                  class="btn btn-primary text-sm px-6 py-3"
+                  id="alignBtn"
+                  type="button"
+                  disabled
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0-1.72 0Z"/><path d="m14 7 3 3"/><path d="M5 6v4"/><path d="M19 14v4"/><path d="M10 2v2"/><path d="M7 8H3"/><path d="M21 16h-4"/><path d="M11 3H9"/></svg>
+                  Preview &amp; Align
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 ml-1"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </button>
+                <p class="ready-note">Requires both streams to be filled</p>
+                <button
+                  class="btn btn-secondary text-sm px-5 py-3"
+                  id="collapseSourcesBtn"
+                  type="button"
+                  style="display: none;"
+                  title="Collapse source panels"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="m18 15-6-6-6 6"/></svg>
+                  Collapse
+                </button>
+              </section>
+                <div class="ready-footer">
+                  <span>Bug reporting: <a href="mailto:angelo.destro@hc-sc.gc.ca?subject=Symmetra%20bug%20report">angelo.destro@hc-sc.gc.ca</a></span>
+                  <span>Property of Health Canada</span>
+                </div>
+            </div>
+          </div>
+        </div>
+        </section>
+
+        <!-- Step 2: Aligned Dual Preview & Issue Tracking -->
+        <section id="previewSection">
+          <!-- Top View Control Toolbar -->
+          <div class="view-control-bar" id="viewControlBar">
+            <div class="view-control-actions view-control-actions-left">
+              <button type="button" id="toggleFocusMode" class="view-control-button" title="Dim inactive blocks">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5 inline mr-1"><circle cx="12" cy="12" r="3"/><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/></svg>
+                <span>Focus mode</span>
+              </button>
+              <button type="button" id="toggleBlurMode" class="view-control-button" title="Blur out-of-focus blocks">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5 inline mr-1"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
+                <span>Blur mode</span>
+              </button>
+              <button type="button" id="toggleHighlightBox" class="view-control-button is-active" title="Show or hide the active box around the active block">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5 inline mr-1"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>
+                <span>Active box</span>
+              </button>
+            </div>
+
+            <div class="view-control-actions view-control-actions-center">
+              <div class="fr-view-toggle">
+                <span class="fr-view-slider" aria-hidden="true"></span>
+                <button
+                  type="button"
+                  id="frViewVisualBtn"
+                  class="fr-view-btn is-active"
+                  title="Switch to Visual Preview &amp; Live Edit"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                  Visual
+                </button>
+                <button
+                  type="button"
+                  id="frViewCodeBtn"
+                  class="fr-view-btn"
+                  title="Switch to HTML Code View"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                  Code
+                </button>
+                <button
+                  type="button"
+                  id="frViewSplitBtn"
+                  class="fr-view-btn"
+                  title="Split view: Visual on top, Code below"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="12" y1="3" x2="12" y2="21"/></svg>
+                  Split
+                </button>
+              </div>
+            </div>
+
+            <div class="view-control-actions view-control-actions-right">
+              <div class="zoom-control-group" id="zoomControlGroup" title="Magnifier: Zoom in/out of compare screens only (Ctrl + / - or Ctrl + Wheel)">
+                <button type="button" id="zoomOutBtn" class="zoom-btn" title="Zoom out compare screens (Ctrl -)" aria-label="Zoom out compare screens">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+                </button>
+                <button type="button" id="zoomResetBtn" class="zoom-level-display" title="Click to reset zoom to 100% (Ctrl 0)" aria-label="Reset zoom to 100%">
+                  <span id="zoomLevelDisplay">100%</span>
+                </button>
+                <button type="button" id="zoomInBtn" class="zoom-btn" title="Zoom in compare screens (Ctrl +)" aria-label="Zoom in compare screens">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+                </button>
+              </div>
+              <button type="button" id="toggleWordDocBtn" class="view-control-button" title="Toggle Original Word Document view (3-pane layout)" aria-label="Toggle Original Word Document view">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5 inline mr-1"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                <span>Word doc</span>
+              </button>
+              <button type="button" id="toggleFullscreenBtn" class="view-control-button" title="Focus on previews: hide inputs and panels">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5 inline mr-1 fs-enter-icon"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5 inline mr-1 fs-exit-icon" style="display: none;"><path d="M4 14h6v6"/><path d="M20 10h-6V4"/><path d="m14 10 7-7"/><path d="m3 21 7-7"/></svg>
+                <span>Fullscreen</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Dual Preview Workspaces -->
+          <div class="workspace" id="workspace">
+            <button
+              type="button"
+              class="pane-expand-tab"
+              id="enExpandPaneBtn"
+              title="Show English panel"
+              aria-label="Show English panel"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+              <span class="pane-expand-tab-label">EN</span>
+            </button>
+            <div class="preview-pane" id="enPreviewPane">
+              <div class="preview-header">
+                <span class="flex items-center gap-2.5 font-semibold text-sm">
+                  <span class="sync-dot" id="enSyncStatus" style="color: #10b981;" title="Sync status: synced" aria-label="Sync status: synced"><span class="sync-dot-inner"></span></span>
+                  <span class="tag tag-en">EN</span>
+                  <span>English (source)</span>
+                </span>
+                <span class="flex items-center gap-2">
+                  <button
+                    type="button"
+                    class="view-control-button"
+                    id="enCollapsePaneBtn"
+                    title="Collapse English panel"
+                    aria-label="Collapse English panel"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    <span>Collapse</span>
+                  </button>
+                  <button
+                    type="button"
+                    class="preview-header-search-btn"
+                    id="enOpenSearchBtn"
+                    title="Find in English preview (Ctrl+F)"
+                    aria-label="Find in English"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                  </button>
+                </span>
+              </div>
+
+              <!-- English In-Panel Search Bar (drops down from header) -->
+              <div class="panel-search-bar" id="enPanelSearch" data-pane="en" aria-label="Search English preview">
+                <div class="panel-search-inner">
+                  <div class="panel-search-input-wrap">
+                    <svg class="panel-search-icon" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                    <input
+                      type="text"
+                      class="panel-search-input"
+                      id="enSearchInput"
+                      placeholder="Find in English preview (Enter: next, Esc: close)..."
+                      autocomplete="off"
+                      spellcheck="false"
+                    />
+                    <span class="panel-search-count" id="enSearchCount"></span>
+                  </div>
+                  <div class="panel-search-actions">
+                    <button type="button" class="panel-search-btn" id="enSearchPrevBtn" title="Previous match (Shift+Enter)">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+                    </button>
+                    <button type="button" class="panel-search-btn" id="enSearchNextBtn" title="Next match (Enter)">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                    </button>
+                    <button type="button" class="panel-search-btn panel-search-close" id="enSearchCloseBtn" title="Close search (Esc)">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="preview-frame-wrap">
+                <iframe id="enPreviewFrame" title="English Source Preview" sandbox="allow-same-origin allow-scripts"></iframe>
+                <div id="enCodeWrap" class="fr-code-editor-wrap" style="display: none;">
+                  <div class="fr-code-toolbar">
+                    <div class="flex items-center gap-2 text-slate-300 font-mono text-[11px]">
+                      <span class="inline-block w-2 h-2 rounded-full bg-cyan-400"></span>
+                      <span class="font-medium text-slate-200">english-source.html</span>
+                      <span class="text-slate-600">•</span>
+                      <span id="enCodeStats" class="text-slate-400">0 lines</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <button
+                        type="button"
+                        id="wrapEnCodeBtn"
+                        class="fr-code-tool-btn is-active"
+                        title="Toggle text wrapping"
+                        aria-pressed="true"
+                      >
+                        <span class="inline-flex items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3 h-3 mr-1"><path d="M3 6h18"/><path d="M3 12h18"/><path d="M3 18h8"/><path d="m15 15 4 3-4 3"/></svg>
+                        </span>
+                        <span>Wrap</span>
+                      </button>
+                      <button type="button" id="copyEnCodeBtn" class="fr-code-tool-btn" title="Copy English HTML to clipboard">
+                        <span class="fr-copy-icon-wrap inline-flex items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3 h-3 mr-1 fr-copy-svg"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                        </span>
+                        <span class="fr-copy-label">Copy</span>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="fr-code-editor-box is-wrapped" id="enCodeEditorBox">
+                    <div class="fr-code-gutter" id="enCodeGutter" aria-hidden="true"></div>
+                    <div class="fr-code-stage" id="enCodeStage">
+                      <pre class="fr-code-highlight" id="enCodeHighlight" aria-hidden="true"><code id="enCodeHighlightInner"></code></pre>
+                      <textarea id="enCodeEditor" class="fr-code-textarea" spellcheck="false" wrap="soft" readonly placeholder="English HTML source code will appear here..."></textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="preview-pane" id="frPreviewPane">
+              <div class="preview-header">
+                <span class="flex items-center gap-2.5 font-semibold text-sm">
+                  <span class="sync-dot" id="frSyncStatus" style="color: #10b981;" title="Sync status: synced" aria-label="Sync status: synced"><span class="sync-dot-inner"></span></span>
+                  <span class="tag tag-fr">FR</span>
+                  <span id="frPaneTitle">French (aligned)</span>
+                </span>
+                <div class="flex items-center gap-2.5">
+                  <div class="flex items-center gap-1.5">
+                    <button type="button" id="toggleAutoSync" class="view-control-button is-active">
+                      <span>Auto-sync on</span>
+                    </button>
+                    <div class="sync-stepper" id="syncStepper" role="group" aria-label="Nudge French sync offset">
+                      <button type="button" id="rightBack" class="sync-stepper-btn" title="Nudge French pane up 1 block ([)" aria-label="Nudge sync back 1 block">− 1</button>
+                      <button type="button" id="syncOffsetBtn" class="sync-stepper-value" title="Current sync offset — click to reset to 0" aria-label="Current sync offset, activate to reset">0</button>
+                      <button type="button" id="rightForward" class="sync-stepper-btn" title="Nudge French pane down 1 block (])" aria-label="Nudge sync forward 1 block">+ 1</button>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    class="preview-header-search-btn"
+                    id="frOpenSearchBtn"
+                    title="Find in French preview (Ctrl+F)"
+                    aria-label="Find in French"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- French In-Panel Search Bar (drops down from header) -->
+              <div class="panel-search-bar" id="frPanelSearch" data-pane="fr" aria-label="Search French preview">
+                <div class="panel-search-inner">
+                  <div class="panel-search-input-wrap">
+                    <svg class="panel-search-icon" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                    <input
+                      type="text"
+                      class="panel-search-input"
+                      id="frSearchInput"
+                      placeholder="Find in French preview (Enter: next, Esc: close)..."
+                      autocomplete="off"
+                      spellcheck="false"
+                    />
+                    <span class="panel-search-count" id="frSearchCount"></span>
+                  </div>
+                  <div class="panel-search-actions">
+                    <button type="button" class="panel-search-btn" id="frSearchPrevBtn" title="Previous match (Shift+Enter)">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+                    </button>
+                    <button type="button" class="panel-search-btn" id="frSearchNextBtn" title="Next match (Enter)">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                    </button>
+                    <button type="button" class="panel-search-btn panel-search-close" id="frSearchCloseBtn" title="Close search (Esc)">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="preview-frame-wrap" id="frPreviewWrap">
+                <iframe id="frPreviewFrame" title="French Translation Preview" sandbox="allow-same-origin allow-scripts"></iframe>
+                <div id="frCodeWrap" class="fr-code-editor-wrap" style="display: none;">
+                  <div class="fr-code-toolbar">
+                    <div class="flex items-center gap-2 text-slate-300 font-mono text-[11px]">
+                      <span class="inline-block w-2 h-2 rounded-full" style="background: linear-gradient(135deg, #7c3aed, #c026d3);"></span>
+                      <span class="font-medium text-slate-200">french-localized.html</span>
+                      <span class="text-slate-600">•</span>
+                      <span id="frCodeStats" class="text-slate-400">0 lines</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <button
+                        type="button"
+                        id="wrapFrCodeBtn"
+                        class="fr-code-tool-btn is-active"
+                        title="Toggle text wrapping"
+                        aria-pressed="true"
+                      >
+                        <span class="inline-flex items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3 h-3 mr-1"><path d="M3 6h18"/><path d="M3 12h18"/><path d="M3 18h8"/><path d="m15 15 4 3-4 3"/></svg>
+                        </span>
+                        <span>Wrap</span>
+                      </button>
+                      <button
+                        type="button"
+                        id="copyFrCodeBtn"
+                        class="fr-code-tool-btn"
+                        title="Copy French HTML to clipboard"
+                      >
+                        <span class="fr-copy-icon-wrap inline-flex items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3 h-3 mr-1 fr-copy-svg"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                        </span>
+                        <span class="fr-copy-label">Copy</span>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="fr-code-editor-box is-wrapped" id="frCodeEditorBox">
+                    <div class="fr-code-gutter" id="frCodeGutter" aria-hidden="true"></div>
+                    <div class="fr-code-stage" id="frCodeStage">
+                      <pre class="fr-code-highlight" id="frCodeHighlight" aria-hidden="true"><code id="frCodeHighlightInner"></code></pre>
+                      <textarea
+                        id="frCodeEditor"
+                        class="fr-code-textarea"
+                        spellcheck="false"
+                        wrap="soft"
+                        autocapitalize="off"
+                        autocomplete="off"
+                        autocorrect="off"
+                        placeholder="French HTML source code will appear here..."
+                      ></textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Third Pane: Original Unmodified Word Document View -->
+            <div class="preview-pane" id="docxPreviewPane" style="display: none;">
+              <div class="preview-header">
+                <span class="flex items-center gap-2.5 font-semibold text-sm">
+                  <span class="tag tag-doc">DOCX</span>
+                  <span id="docxPaneTitle">Word Document</span>
+                </span>
+                <div class="flex items-center gap-2.5">
+                  <button
+                    type="button"
+                    class="preview-header-search-btn"
+                    id="docxOpenSearchBtn"
+                    title="Find in Word Document preview (Ctrl+F)"
+                    aria-label="Find in Word Document"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                  </button>
+                  <button
+                    type="button"
+                    id="closeWordDocPaneBtn"
+                    class="p-1 rounded hover:bg-white/10 text-slate-400 hover:text-white transition-colors cursor-pointer border-0 bg-transparent flex items-center justify-center"
+                    title="Close Word Document view"
+                    aria-label="Close Word Document view"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Word Document In-Panel Search Bar (drops down from header) -->
+              <div class="panel-search-bar" id="docxPanelSearch" data-pane="docx" aria-label="Search Word Document preview">
+                <div class="panel-search-inner">
+                  <div class="panel-search-input-wrap">
+                    <svg class="panel-search-icon" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                    <input
+                      type="text"
+                      class="panel-search-input"
+                      id="docxSearchInput"
+                      placeholder="Find in Word Document preview (Enter: next, Esc: close)..."
+                      autocomplete="off"
+                      spellcheck="false"
+                    />
+                    <span class="panel-search-count" id="docxSearchCount"></span>
+                  </div>
+                  <div class="panel-search-actions">
+                    <button type="button" class="panel-search-btn" id="docxSearchPrevBtn" title="Previous match (Shift+Enter)">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+                    </button>
+                    <button type="button" class="panel-search-btn" id="docxSearchNextBtn" title="Next match (Enter)">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                    </button>
+                    <button type="button" class="panel-search-btn panel-search-close" id="docxSearchCloseBtn" title="Close search (Esc)">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="preview-frame-wrap" id="docxPreviewWrap">
+                <iframe id="docxPreviewFrame" title="Unmodified Word Document Preview" sandbox="allow-same-origin allow-scripts"></iframe>
+              </div>
+            </div>
+          </div>
+
+          <!-- Expandable Diagnostic & Inspector Sheet -->
+          <div id="statDetailPanel">
+            <div class="stat-detail-header">
+              <div class="flex items-center gap-1.5 flex-wrap" id="drawerTabsWrap">
+                <button type="button" class="drawer-tab px-3 py-1.5 rounded-md text-xs font-semibold transition-all" data-category="missing" id="drawerTabMissing">
+                  Missing FR (0)
+                </button>
+                <button type="button" class="drawer-tab px-3 py-1.5 rounded-md text-xs font-semibold transition-all" data-category="mismatch" id="drawerTabMismatch">
+                  Conversion (0)
+                </button>
+                <button type="button" class="drawer-tab px-3 py-1.5 rounded-md text-xs font-semibold transition-all" data-category="qa-diff" id="drawerTabQaDiff">
+                  QA &amp; Diff (0)
+                </button>
+                <button type="button" class="drawer-tab px-3 py-1.5 rounded-md text-xs font-semibold transition-all" data-category="links" id="drawerTabLinks">
+                  Links (0)
+                </button>
+                <button type="button" class="drawer-tab px-3 py-1.5 rounded-md text-xs font-semibold transition-all" data-category="headings" id="drawerTabHeadings">
+                  Headings (0)
+                </button>
+                <button type="button" class="drawer-tab px-3 py-1.5 rounded-md text-xs font-semibold transition-all" data-category="alt" id="drawerTabAlt">
+                  Alt Text (0)
+                </button>
+                <button type="button" class="drawer-tab px-3 py-1.5 rounded-md text-xs font-semibold transition-all" data-category="typography" id="drawerTabTypography">
+                  Spaces (0)
+                </button>
+                <button type="button" class="drawer-tab px-3 py-1.5 rounded-md text-xs font-semibold transition-all" data-category="lang-en" id="drawerTabLangEn">
+                  Smart lang="en" (0)
+                </button>
+                <button type="button" class="drawer-tab px-3 py-1.5 rounded-md text-xs font-semibold transition-all" data-category="extra" id="drawerTabExtra">
+                  Extra FR (0)
+                </button>
+
+              </div>
+
+              <div class="flex items-center gap-3">
+                <button type="button" id="closeDrawerBtn" class="p-1 hover:bg-surface-hover rounded text-text-muted hover:text-text transition-colors" title="Close inspector (Esc)">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="stat-detail-body" id="drawerBody"></div>
+          </div>
+
+          <!-- Docked Bottom Premium Audit Dock -->
+          <div class="preview-stats-dock" id="previewStatsBar">
+            <div class="preview-stats-dock-inner qa-dock">
+              <!-- Left Section: Segmented metric diagnostics -->
+              <div class="qa-dock-left">
+                <button type="button" id="qaClearChip" class="qa-clear-chip" title="Show all categories" style="display: none;">
+                  <span id="qaClearLabel">✓ 0 clear</span>
+                </button>
+
+                <!-- Segmented Metric Diagnostics Bar -->
+                <div class="preview-segmented-bar qa-seg-bar" title="Alignment Status & Issues">
+                  <button type="button" class="preview-segment-tab is-dim" data-category="missing" id="tabMissing" title="Missing French blocks (Critical)">
+                    <span class="preview-tab-dot dot-danger"></span>
+                    <span>Missing</span>
+                    <span class="preview-tab-count" id="cMissing">0</span>
+                  </button>
+                  <div class="qa-seg-divider"></div>
+                  <button type="button" class="preview-segment-tab is-dim" data-category="mismatch" id="tabMismatch" title="Where the Word document used a different element than your English HTML, and what the French output did about it. Informational — the French output always follows the English HTML.">
+                    <span class="preview-tab-dot dot-warn"></span>
+                    <span>Conversion</span>
+                    <span class="preview-tab-count" id="cMismatch">0</span>
+                  </button>
+                  <div class="qa-seg-divider"></div>
+                  <button type="button" class="preview-segment-tab is-dim" data-category="extra" id="tabExtra" title="Extra French content from the Word document">
+                    <span class="preview-tab-dot dot-info"></span>
+                    <span>Extra</span>
+                    <span class="preview-tab-count" id="cExtra">0</span>
+                  </button>
+                  <div class="qa-seg-divider"></div>
+                  <button type="button" class="preview-segment-tab" data-category="qa-diff" id="tabQaDiff" title="Inspect Side-by-Side QA Diff, Links & Formatting">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="qa-seg-icon qa-seg-icon-cyan"><path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                    <span>QA Diff</span>
+                    <span class="preview-tab-count" id="cQaDiff">0</span>
+                  </button>
+                  <div class="qa-seg-divider"></div>
+                  <button type="button" class="preview-segment-tab" data-category="links" id="tabLinks" title="English vs French hyperlink matrix">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="qa-seg-icon qa-seg-icon-indigo"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                    <span>Links</span>
+                    <span class="preview-tab-count" id="cLinks">0</span>
+                  </button>
+                  <div class="qa-seg-divider"></div>
+                  <button type="button" class="preview-segment-tab" data-category="headings" id="tabHeadings" title="Heading outline and hierarchy check">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="qa-seg-icon qa-seg-icon-violet"><path d="M6 4v16M18 4v16M6 12h12"/></svg>
+                    <span>Headings</span>
+                    <span class="preview-tab-count" id="cHeadings">0</span>
+                  </button>
+                  <div class="qa-seg-divider"></div>
+                  <button type="button" class="preview-segment-tab" data-category="alt" id="tabAlt" title="Image alternative text audit">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="qa-seg-icon qa-seg-icon-orange"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.5-3.5a1 1 0 0 0-1.42 0L7 20"/></svg>
+                    <span>Alt</span>
+                    <span class="preview-tab-count" id="cAlt">0</span>
+                  </button>
+                  <div class="qa-seg-divider"></div>
+                  <button type="button" class="preview-segment-tab" data-category="typography" id="tabTypography" title="French non-breaking spaces & punctuation (&nbsp;)">
+                    <span class="qa-t-badge">T</span>
+                    <span>Spaces</span>
+                    <span class="preview-tab-count" id="cTypo">0</span>
+                  </button>
+                  <div class="qa-seg-divider"></div>
+                  <button type="button" class="preview-segment-tab" data-category="lang-en" id="tabLangEn" title="Untranslated English quotes & terms">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="qa-seg-icon qa-seg-icon-slate"><circle cx="12" cy="12" r="9"/><path d="M3.6 9h16.8M3.6 15h16.8"/></svg>
+                    <span>lang="en"</span>
+                    <span class="preview-tab-count" id="cLangEn">0</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Right Section: Block navigator -->
+              <div class="qa-dock-right">
+                <!-- Block Navigator Widget -->
+                <div class="preview-dock-hud">
+                  <div class="preview-block-stepper">
+                    <div id="blockJumpToggleBtn" class="qa-block-jump" title="Type a block number and press Enter to jump">
+                      <span class="qa-block-label">Block</span>
+                      <input
+                        type="text"
+                        id="activeBlockHudText"
+                        class="qa-block-num-input"
+                        value="1"
+                        inputmode="numeric"
+                        autocomplete="off"
+                        spellcheck="false"
+                        aria-label="Current block number. Type a number and press Enter to jump."
+                      />
+                      <span class="qa-block-sep">/</span>
+                      <span class="qa-block-total" id="activeBlockHudTotal">1</span>
+                      <span class="qa-block-tag" id="activeBlockHudTag">&lt;p&gt;</span>
+                    </div>
+                    <div class="qa-stepper-btns">
+                      <button type="button" id="prevBlockBtn" class="qa-stepper-btn" title="Previous block (↑)">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
+                      </button>
+                      <button type="button" id="nextBlockBtn" class="qa-stepper-btn" title="Next block (↓)">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
+                      </button>
+                    </div>
+                  </div>
+
+                  <span id="syncOffsetBadge" class="text-[11px] font-mono px-2 py-0.5 rounded bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20" style="display: none;">
+                    Offset: 0
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <!-- Navigation & Controls Guide Modal -->
+      <div id="controlsModal" class="controls-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="controlsModalTitle" style="display: none;">
+        <div class="controls-modal-card">
+          <div class="controls-modal-header">
+            <div class="flex items-center gap-2.5">
+              <span class="p-2 rounded-lg bg-accent-soft text-accent">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="12" x="3" y="6" rx="2"/><path d="M7 10h.01"/><path d="M11 10h.01"/><path d="M15 10h.01"/><path d="M7 14h.01"/><path d="M11 14h.01"/><path d="M15 14h.01"/></svg>
+              </span>
+              <div>
+                <h2 id="controlsModalTitle" class="text-base font-bold text-text">Controls &amp; Navigation Guide</h2>
+                <p class="text-xs text-text-secondary">Shortcuts, mouse navigation, live editing, and sync features</p>
+              </div>
+            </div>
+            <button type="button" id="closeControlsModalBtn" class="p-1.5 rounded-lg hover:bg-surface-hover text-text-muted hover:text-text transition-colors" title="Close guide (Esc)">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+          </div>
+
+          <div class="controls-modal-body">
+            <!-- Core Navigation Section -->
+            <div class="controls-section">
+              <h3 class="controls-section-title">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-accent"><circle cx="12" cy="12" r="10"/><path d="m10 15 5-3-5-3v6Z"/></svg>
+                Block Navigation
+              </h3>
+              <div class="controls-grid">
+                <div class="control-card">
+                  <div class="control-keys">
+                    <kbd class="kbd">↑</kbd>
+                    <kbd class="kbd">↓</kbd>
+                  </div>
+                  <div class="control-desc">
+                    <strong>Step Blocks:</strong> Jump forward or backward one synchronized block at a time.
+                  </div>
+                </div>
+
+                <div class="control-card">
+                  <div class="control-keys">
+                    <span class="kbd-label">Wheel</span>
+                  </div>
+                  <div class="control-desc">
+                    <strong>Mouse Wheel:</strong> 1 mouse wheel notch moves down or up exactly 1 block without skipping.
+                  </div>
+                </div>
+
+                <div class="control-card">
+                  <div class="control-keys">
+                    <span class="kbd-label">Click</span>
+                  </div>
+                  <div class="control-desc">
+                    <strong>Direct Selection:</strong> Click any block in either English or French preview to instantly jump and align.
+                  </div>
+                </div>
+
+                <div class="control-card">
+                  <div class="control-keys">
+                    <span class="kbd-label">HUD</span>
+                  </div>
+                  <div class="control-desc">
+                    <strong>Block Stepper / Jump:</strong> Click the "Block X/Y" badge in the bottom bar to type a number and jump directly.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sync & Alignment Section -->
+            <div class="controls-section">
+              <h3 class="controls-section-title">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-500"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+                Sync &amp; Offset Control
+              </h3>
+              <div class="controls-grid">
+                <div class="control-card">
+                  <div class="control-keys">
+                    <kbd class="kbd">Alt</kbd>
+                  </div>
+                  <div class="control-desc">
+                    <strong>Pause Sync:</strong> Hold <kbd class="kbd text-[11px]">Alt</kbd> while scrolling or clicking to freely navigate one pane independently without moving the other.
+                  </div>
+                </div>
+
+                <div class="control-card">
+                  <div class="control-keys">
+                    <kbd class="kbd">[</kbd>
+                    <kbd class="kbd">]</kbd>
+                  </div>
+                  <div class="control-desc">
+                    <strong>Nudge Alignment:</strong> Shift the French pane's alignment offset by -1 or +1 block if paragraphs are misaligned.
+                  </div>
+                </div>
+
+                <div class="control-card">
+                  <div class="control-keys">
+                    <span class="kbd-label">Auto-Sync</span>
+                  </div>
+                  <div class="control-desc">
+                    <strong>Toggle Synchronization:</strong> Enable or disable dual-pane locked scrolling from the view control bar.
+                  </div>
+                </div>
+
+                <div class="control-card">
+                  <div class="control-keys">
+                    <span class="kbd-label">− 0 +</span>
+                  </div>
+                  <div class="control-desc">
+                    <strong>Reset Sync:</strong> Click the offset value in the middle of the sync stepper to clear any manual offset and re-synchronize the active block to parity.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Live Localization & Code Export Section -->
+            <div class="controls-section">
+              <h3 class="controls-section-title">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-cyan-500"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg>
+                Live Localization &amp; Export
+              </h3>
+              <div class="controls-grid">
+                <div class="control-card">
+                  <div class="control-keys">
+                    <span class="kbd-label">Visual</span>
+                  </div>
+                  <div class="control-desc">
+                    <strong>Live Visual Editing:</strong> French text is editable live in the preview. Click into any text block and type directly.
+                  </div>
+                </div>
+
+                <div class="control-card">
+                  <div class="control-keys">
+                    <span class="kbd-label">Code</span>
+                  </div>
+                  <div class="control-desc">
+                    <strong>Code View:</strong> Switch to Code View in the French header to copy and inspect clean localized HTML.
+                  </div>
+                </div>
+
+                <div class="control-card">
+                  <div class="control-keys">
+                    <kbd class="kbd">Ctrl</kbd>
+                    <span class="text-xs text-text-secondary">+</span>
+                    <kbd class="kbd">+/-</kbd>
+                  </div>
+                  <div class="control-desc">
+                    <strong>Magnifier:</strong> Zoom in and out of the compare screens using the toolbar magnifier, <kbd class="kbd text-[11px]">Ctrl</kbd> + <kbd class="kbd text-[11px]">+/-</kbd>, or <kbd class="kbd text-[11px]">Ctrl</kbd> + wheel. Buttons and UI remain fixed.
+                  </div>
+                </div>
+
+                <div class="control-card">
+                  <div class="control-keys">
+                    <span class="kbd-label">Focus</span>
+                  </div>
+                  <div class="control-desc">
+                    <strong>Focus &amp; Blur:</strong> Use <em>Focus Mode</em> or <em>Blur Inactive</em> to spotlight the current block and eliminate distractions.
+                  </div>
+                </div>
+
+                <div class="control-card">
+                  <div class="control-keys">
+                    <kbd class="kbd">Esc</kbd>
+                    <kbd class="kbd">?</kbd>
+                  </div>
+                  <div class="control-desc">
+                    <strong>Quick Keys:</strong> Press <kbd class="kbd text-[11px]">?</kbd> to toggle this guide, and <kbd class="kbd text-[11px]">Esc</kbd> to close any active drawer or modal.
+                  </div>
+                </div>
+
+                <div class="control-card">
+                  <div class="control-keys">
+                    <kbd class="kbd">N</kbd>
+                    <kbd class="kbd">Shift+N</kbd>
+                  </div>
+                  <div class="control-desc">
+                    <strong>Issue Hopping:</strong> Press <kbd class="kbd text-[11px]">N</kbd> to jump to the next QA issue (Missing, Mismatch, QA Diff, Spacing, lang="en", Extra) and <kbd class="kbd text-[11px]">Shift+N</kbd> to go back.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="controls-modal-footer">
+            <span class="text-xs text-text-muted">Tip: Reopen this guide anytime from the top bar or by pressing <kbd class="kbd text-[10px]">?</kbd>.</span>
+            <button type="button" id="dismissControlsModalBtn" class="btn btn-primary text-xs px-4 py-2">
+              Got it
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Split Block Modal -->
+      <div id="splitBlockModal" class="controls-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="splitBlockModalTitle" style="display: none;">
+        <div class="controls-modal-card controls-modal-card--medium">
+          <div class="controls-modal-header">
+            <div class="flex items-center gap-2.5">
+              <span class="modal-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+              </span>
+              <div>
+                <h2 id="splitBlockModalTitle" class="modal-title">Split French Text Block</h2>
+                <p class="modal-subtitle" id="splitBlockSubTitle">Divide a combined block into two separate aligned blocks</p>
+              </div>
+            </div>
+            <button type="button" id="closeSplitModalBtn" class="modal-close" title="Close (Esc)" aria-label="Close">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+          </div>
+
+          <div class="controls-modal-body">
+            <div class="modal-field">
+              <label class="modal-label" for="splitOriginalText">Original French Text to Split</label>
+              <textarea id="splitOriginalText" class="modal-textarea modal-textarea--mono h-24" readonly spellcheck="false"></textarea>
+            </div>
+
+            <div class="modal-grid">
+              <div class="modal-field">
+                <label class="modal-label" for="splitPart1Text">Part 1 (Current Block)</label>
+                <textarea id="splitPart1Text" class="modal-textarea h-28" placeholder="First portion..."></textarea>
+              </div>
+              <div class="modal-field">
+                <label class="modal-label" for="splitPart2Text">Part 2 (New Following Block)</label>
+                <textarea id="splitPart2Text" class="modal-textarea h-28" placeholder="Second portion..."></textarea>
+              </div>
+            </div>
+
+            <div class="modal-presets">
+              <span class="modal-presets-label">Quick Split Presets</span>
+              <button type="button" id="splitBySentenceBtn" class="btn btn-secondary btn-compact">Split at First Period (.)</button>
+              <button type="button" id="splitByNewlineBtn" class="btn btn-secondary btn-compact">Split at Line Break</button>
+              <button type="button" id="splitByHalfBtn" class="btn btn-secondary btn-compact">Split in Half</button>
+            </div>
+          </div>
+
+          <div class="controls-modal-footer">
+            <button type="button" id="cancelSplitModalBtn" class="btn btn-secondary">
+              Cancel
+            </button>
+            <button type="button" id="confirmSplitBlockBtn" class="btn btn-primary">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+              <span>Apply Split &amp; Re-align</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Personal Context Menu for Visual Preview & Aligned Editor -->
+      <div id="customContextMenu" class="custom-context-menu fixed hidden z-[99999] w-80 rounded-xl bg-[#121622] border border-violet-500/30 shadow-[0_20px_50px_rgba(0,0,0,0.7),0_0_20px_rgba(139,92,246,0.15)] overflow-hidden text-sm select-none" style="top: 0; left: 0;" role="menu" aria-orientation="vertical">
+        <!-- Header Bar -->
+        <div id="ctxMenuHeader" class="px-4 py-3 bg-[#171c2c]/80 border-b border-slate-800/90 flex items-center justify-between">
+          <div class="flex items-center gap-2 font-semibold text-slate-100 tracking-tight">
+            <span id="ctxMenuIcon" class="select-none inline-flex"><span class="tag tag-fr">FR</span></span>
+            <span id="ctxMenuTitle" class="truncate">French Block Actions</span>
+          </div>
+          <span id="ctxMenuBlockBadge" class="text-xs px-2 py-0.5 rounded bg-violet-500/20 text-violet-300 font-mono font-medium border border-violet-500/30">Block #6</span>
+        </div>
+
+        <!-- Section 1: Editing Operations -->
+        <div class="p-1.5 border-b border-slate-800/80 space-y-0.5">
+          <!-- Replace Text / Provide Translation -->
+          <button type="button" id="ctxBtnReplaceText" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-violet-600/15 group transition-colors text-left" role="menuitem">
+            <div class="flex items-center gap-2.5">
+              <svg class="w-4 h-4 text-violet-400 group-hover:text-violet-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+              <span id="ctxBtnReplaceTextLabel">Replace text...</span>
+            </div>
+          </button>
+
+          <!-- Split Block -->
+          <button type="button" id="ctxBtnSplitBlock" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-violet-600/15 group transition-colors text-left" role="menuitem">
+            <div class="flex items-center gap-2.5">
+              <svg class="w-4 h-4 text-amber-400 group-hover:text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243 4.243 3 3 0 004.243-4.243zm0-5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z"/></svg>
+              <span>Split block...</span>
+            </div>
+          </button>
+
+          <!-- Remove Hyperlink -->
+          <button type="button" id="ctxBtnRemoveLink" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-violet-600/15 group transition-colors text-left" role="menuitem">
+            <div class="flex items-center gap-2.5">
+              <svg class="w-4 h-4 text-blue-400 group-hover:text-blue-300" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18.84 12.25 1.72-1.71a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="m5.17 11.75-1.72 1.71a5 5 0 0 0 7.07 7.07l1.71-1.71"/><line x1="8" x2="8" y1="2" y2="5"/><line x1="2" x2="5" y1="8" y2="8"/><line x1="16" x2="16" y1="19" y2="22"/><line x1="19" x2="22" y1="16" y2="16"/></svg>
+              <span id="ctxBtnRemoveLinkLabel">Remove hyperlink</span>
+            </div>
+          </button>
+
+          <!-- Resolve Extra Marker -->
+          <button type="button" id="ctxBtnResolve" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/15 group transition-colors text-left" role="menuitem">
+            <div class="flex items-center gap-2.5">
+              <svg class="w-4 h-4 text-emerald-400 group-hover:text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+              <span>Resolve (remove extra marker)</span>
+            </div>
+          </button>
+
+          <!-- Delete Text / Remove Block -->
+          <button type="button" id="ctxBtnDeleteText" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-red-400 hover:text-red-300 hover:bg-red-500/15 group transition-colors text-left" role="menuitem">
+            <div class="flex items-center gap-2.5">
+              <svg class="w-4 h-4 text-red-400 group-hover:text-red-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              <span id="ctxBtnDeleteTextLabel">Delete text</span>
+            </div>
+          </button>
+        </div>
+
+        <!-- Section 2: Bilingual Navigation & Clipboard -->
+        <div class="p-1.5 border-b border-slate-800/80 space-y-0.5">
+          <!-- Jump to Paired Block -->
+          <button type="button" id="ctxBtnJumpPair" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-violet-600/15 group transition-colors text-left" role="menuitem">
+            <div class="flex items-center gap-2.5">
+              <svg class="w-4 h-4 text-cyan-400 group-hover:text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+              <span id="ctxBtnJumpPairLabel">Jump to paired block</span>
+            </div>
+          </button>
+
+          <!-- Copy Block / Selection Text -->
+          <button type="button" id="ctxBtnCopyText" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-violet-600/15 group transition-colors text-left" role="menuitem">
+            <div class="flex items-center gap-2.5">
+              <svg class="w-4 h-4 text-emerald-400 group-hover:text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+              <span id="ctxBtnCopyTextLabel">Copy block text</span>
+            </div>
+          </button>
+
+          <!-- Paste Replacement Text -->
+          <button type="button" id="ctxBtnPasteText" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-violet-600/15 group transition-colors text-left" role="menuitem">
+            <div class="flex items-center gap-2.5">
+              <svg class="w-4 h-4 text-sky-400 group-hover:text-sky-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+              <span>Paste replacement</span>
+            </div>
+          </button>
+
+          <!-- Undo Last Edit -->
+          <button type="button" id="ctxBtnUndo" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-violet-600/15 group transition-colors text-left" role="menuitem">
+            <div class="flex items-center gap-2.5">
+              <svg class="w-4 h-4 text-slate-400 group-hover:text-slate-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
+              <span>Undo edit</span>
+            </div>
+            <kbd class="text-[11px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/60">Ctrl+Z</kbd>
+          </button>
+        </div>
+
+        <!-- Section 3: Refresh & Preview -->
+        <div class="p-1.5 bg-[#101420]/60">
+          <!-- Refresh Preview -->
+          <button type="button" id="ctxBtnReloadPreview" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/15 group transition-colors text-left font-medium" role="menuitem">
+            <div class="flex items-center gap-2.5">
+              <svg class="w-4 h-4 text-emerald-400 group-hover:text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+              <span>Refresh Visual Preview</span>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Replace Text Popout Modal -->
+      <div id="replaceTextModal" class="controls-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="replaceTextModalTitle" style="display: none;">
+        <div class="controls-modal-card controls-modal-card--narrow">
+          <div class="controls-modal-header">
+            <div class="flex items-center gap-2.5">
+              <span class="modal-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+              </span>
+              <div>
+                <h2 id="replaceTextModalTitle" class="modal-title">Replace Text</h2>
+                <p class="modal-subtitle" id="replaceTextSubTitle">Enter the replacement text to input</p>
+              </div>
+            </div>
+            <button type="button" id="closeReplaceTextModalBtn" class="modal-close" title="Close (Esc)" aria-label="Close">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+          </div>
+
+          <div class="controls-modal-body">
+            <!-- English Source Reference (shown if missing French) -->
+            <div id="replaceEnglishRefBox" class="modal-field hidden">
+              <div class="modal-label">
+                <span>English Source Reference</span>
+                <span class="modal-tag">Read-only</span>
+              </div>
+              <div id="replaceEnglishRefText" class="modal-ref modal-ref--mono"></div>
+            </div>
+
+            <div class="modal-field">
+              <label class="modal-label" for="replaceTextInput" id="replaceInputLabel">Replacement French Text</label>
+              <textarea id="replaceTextInput" class="modal-textarea h-32" placeholder="Type or paste replacement French text..."></textarea>
+            </div>
+
+            <hr class="modal-divider" />
+
+            <div class="modal-meta">
+              <span>Shortcut: <kbd class="kbd-sm">Ctrl</kbd> + <kbd class="kbd-sm">Enter</kbd> to save</span>
+              <span id="replaceTextCharCount" class="modal-counter">0 characters</span>
+            </div>
+          </div>
+
+          <div class="controls-modal-footer">
+            <button type="button" id="cancelReplaceTextModalBtn" class="btn btn-secondary">
+              Cancel
+            </button>
+            <button type="button" id="confirmReplaceTextBtn" class="btn btn-primary">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+              <span>Save &amp; Replace Text</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Start New Workflow Confirmation Modal -->
+      <div id="startWorkflowModal" class="controls-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="startWorkflowModalTitle" style="display: none;">
+        <div class="controls-modal-card max-w-md">
+          <div class="controls-modal-header">
+            <div class="flex items-center gap-2.5">
+              <span class="p-2 rounded-lg bg-amber-500/10 text-amber-500">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+              </span>
+              <div>
+                <h2 id="startWorkflowModalTitle" class="text-base font-bold text-text">Start New Workflow?</h2>
+                <p class="text-xs text-text-secondary">Reset tool to its original state</p>
+              </div>
+            </div>
+            <button type="button" id="closeStartWorkflowModalBtn" class="p-1.5 rounded-lg hover:bg-surface-hover text-text-muted hover:text-text transition-colors" title="Close (Esc)">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+          </div>
+
+          <div class="p-5 flex flex-col gap-3">
+            <p class="text-xs text-text leading-relaxed">
+              This will clear the inputted English HTML source code, Word document, alignments, and all edits made in preview mode.
+            </p>
+            <p class="text-xs text-text-muted leading-relaxed">
+              The tool will return to Step 1 &amp; 2 so you can begin fresh with a new document pair.
+            </p>
+          </div>
+
+          <div class="controls-modal-footer">
+            <button type="button" id="cancelStartWorkflowBtn" class="btn btn-secondary text-xs px-4 py-2">
+              Cancel
+            </button>
+            <button type="button" id="confirmStartWorkflowBtn" class="btn text-xs px-4 py-2 flex items-center gap-1.5 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+              <span>Reset &amp; Start New</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="tutorialConfirmModal" class="controls-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="tutorialConfirmModalTitle" style="display: none;">
+        <div class="controls-modal-card max-w-md">
+          <div class="controls-modal-header">
+            <div class="flex items-center gap-2.5">
+              <span class="p-2 rounded-lg bg-amber-500/10 text-amber-500">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/><path d="M22 10v6"/></svg>
+              </span>
+              <div>
+                <h2 id="tutorialConfirmModalTitle" class="text-base font-bold text-text">Start the tutorial?</h2>
+                <p class="text-xs text-text-secondary">Guided walkthrough</p>
+              </div>
+            </div>
+            <button type="button" id="closeTutorialConfirmBtn" class="p-1.5 rounded-lg hover:bg-surface-hover text-text-muted hover:text-text transition-colors" title="Close (Esc)">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+          </div>
+
+          <div class="p-5 flex flex-col gap-3">
+            <p class="text-xs text-text leading-relaxed">
+              Starting the tutorial now will reset your current workflow — inputs, alignment, and preview edits will be cleared as the tour loads its own samples.
+            </p>
+          </div>
+
+          <div class="controls-modal-footer">
+            <button type="button" id="cancelTutorialConfirmBtn" class="btn btn-secondary text-xs px-4 py-2">
+              Cancel
+            </button>
+            <button type="button" id="confirmTutorialBtn" class="btn text-xs px-4 py-2 flex items-center gap-1.5 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/><path d="M22 10v6"/></svg>
+              <span>Start tutorial</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Global Toast Notification -->
+      <div class="toast" id="toast" role="status" aria-live="polite"></div>
+      <div id="navSyncNote" class="nav-sync-note" role="status" aria-live="polite"></div>
+
+      <!-- Product Tour -->
+      <div id="tourOverlay" class="tour-overlay" hidden></div>
+      <div id="tourHighlight" class="tour-highlight" hidden></div>
+      <div id="tourHighlight2" class="tour-highlight" hidden></div>
+      <div id="tourCard" class="tour-card" hidden role="dialog" aria-modal="true" aria-labelledby="tourTitle">
+        <div class="tour-step" id="tourStep"></div>
+        <h3 id="tourTitle"></h3>
+        <p id="tourBody"></p>
+        <div class="tour-actions">
+          <button type="button" id="tourSkipBtn" class="tour-link">Skip tour</button>
+          <span class="tour-nav">
+            <button type="button" id="tourBackBtn" class="btn btn-secondary tour-btn">Back</button>
+            <button type="button" id="tourNextBtn" class="btn btn-primary tour-btn">Next</button>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Application Script -->
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
